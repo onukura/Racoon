@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block custom_header %}
+{% endblock %}
+
+{% block custom_footer %}
+{% endblock %}
+
+{% block content_header %}
+  {% with content_header_name = "Home" %}
+    {% include "__content_header.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block custom_control_sidebar %}{% endblock %}
+
+{% block main_content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Contents</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="row">
+            {% for page in pages %}
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-info"><i class="fas fa-link"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">{{ page["title"] }}</span>
+                    <a href="{{ page["url"] }}">Link</a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+{% endblock %}

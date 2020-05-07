@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  {% include "__head.html" %}
+
+  {% block custom_header %}{% endblock %}
+
+</head>
+
+<body class="hold-transition sidebar-mini sidebar-collapse">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  {% include "__navbar.html" %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  {% include "__main_sidebar.html" %}
+  <!-- /Main Sidebar Container -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    {% block content_header %}{% endblock %}
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        {% block main_content %}{% endblock %}
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    {% block custom_control_sidebar %}{% endblock %}
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  {% include "__main_footer.html" %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include "__js_base.html" %}
+
+{% block custom_footer %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block custom_header %}
+{% endblock %}
+
+{% block custom_footer %}
+{% endblock %}
+
+{% block content_header %}
+  {% with content_header_name = "Competitions" %}
+    {% include "__content_header.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block custom_control_sidebar %}{% endblock %}
+
+{% block main_content %}
+  <div class="row">
+    <div class="col-12">
+      <!-- Custom Tabs -->
+      <div class="card">
+        <div class="card-header d-flex p-0">
+          <h3 class="card-title p-3">Your Competitions</h3>
+          <ul class="nav nav-pills ml-auto p-2">
+            <li class="nav-item"><a class="nav-link active" href="#tab_active" data-toggle="tab">Active</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tab_closed" data-toggle="tab">Closed</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tab_pinned" data-toggle="tab">Pinned</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tab_hosted" data-toggle="tab">Hosted</a></li>
+          </ul>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab_active">
+              WIP
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_closed">
+              WIP
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_pinned">
+              WIP
+            </div>
+            <div class="tab-pane" id="tab_hosted">
+              WIP
+            </div>
+            <!-- /.tab-pane -->
+          </div>
+          <!-- /.tab-content -->
+        </div><!-- /.card-body -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- /.col -->
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <!-- Custom Tabs -->
+      <div class="card">
+        <div class="card-header d-flex p-0">
+          <h3 class="card-title p-3">All Competitions</h3>
+          <ul class="nav nav-pills ml-auto p-2">
+            <li class="nav-item"><a class="nav-link active" href="#tab_active" data-toggle="tab">Active(Not Entered)</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tab_closed" data-toggle="tab">Closed</a></li>
+          </ul>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab_active">
+              WIP
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_closed">
+              WIP
+            </div>
+            <!-- /.tab-pane -->
+          </div>
+          <!-- /.tab-content -->
+        </div><!-- /.card-body -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- /.col -->
+  </div>
+
+{% endblock %}

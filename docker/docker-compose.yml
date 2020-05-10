@@ -39,3 +39,14 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: root
       PGADMIN_DEFAULT_PASSWORD: root
+
+  racoon:
+    build: ./racoon
+    container_name: racoon
+    ports:
+      - 5000:5000
+    volumes:
+      - ../../:/app
+    environment:
+      FLASK_ENV: debug
+    command: waitress-serve manage:app

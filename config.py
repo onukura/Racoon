@@ -27,7 +27,7 @@ class DeployConfig(BaseConfig):
     DEBUG = False
     DB_USER = "postgres"
     DB_PASSWORD = "postgres"
-    DB_HOST = "localhost"
+    DB_HOST = "postgres"
     DB_PORT = 5432
     DB_NAME = "dslbp"
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{}:{}@{}:{}/{}".format(

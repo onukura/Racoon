@@ -11,13 +11,14 @@ bp_auth = Blueprint("auth", __name__)
 
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
-    password = PasswordField('password', validators=[DataRequired()])
+    username = StringField("username", validators=[DataRequired()])
+    password = PasswordField("password", validators=[DataRequired()])
 
-@bp_auth.route('/login', methods=['GET', 'POST'])
+
+@bp_auth.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
     # handle this for us, and we use a custom LoginForm to validate.
@@ -25,18 +26,19 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
+            flash("Invalid username or password")
+            return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
 
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template("login.html", title="Sign In", form=form)
 
 
-@bp_auth.route('/register', methods=['GET', 'POST'])
+@bp_auth.route("/register", methods=["GET", "POST"])
 def register():
     pass
 
+
 def is_safe_url(next):
-    #TODO implement is_url_safe http://flask.pocoo.org/snippets/62/
+    # TODO implement is_url_safe http://flask.pocoo.org/snippets/62/
     return True

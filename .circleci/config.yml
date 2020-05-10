@@ -34,17 +34,7 @@ jobs:
 #          destination: tr1
 #      - store_test_results:
 #          path: test-reports/
-      - add_ssh_keys:
-          fingerprints:
-            - 'ca:2a:a9:a8:99:ad:d0:d7:83:fe:c8:cd:5c:33:38:a5'
-      - deploy:
-          name: Deploy Master to Heroku
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              git push heroku master
-              heroku run python manage.py
-              heroku restart
-            fi
+
 
   deploy:
     machine:

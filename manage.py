@@ -12,7 +12,7 @@ from racoon.extensions import db
 from racoon.models.user import User
 
 try:
-    FLASK_CONFIG = os.environ["DEBUG"]
+    FLASK_CONFIG = os.environ["FLASK_CONFIG"]
 except:
     FLASK_CONFIG = "debug"
 

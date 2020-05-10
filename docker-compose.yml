@@ -8,11 +8,11 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./minio/data:/data
-      - ./minio/config:/root/.minio
+      - ./docker/minio/data:/data
+      - ./docker/minio/config:/root/.minio
     environment:
-      MINIO_ACCESS_KEY: 123
-      MINIO_SECRET_KEY: 123
+      MINIO_ACCESS_KEY: 123456789
+      MINIO_SECRET_KEY: 123456789
     command: server /export
 
   postgresql:
@@ -21,8 +21,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./postgres/init:/docker-entrypoint-initdb.d
-      - ./postgres/data:/var/lib/postgres
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+      - ./docker/postgres/data:/var/lib/postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -35,18 +35,18 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./pgadmin:/var/lib/pgadmin/storage
+      - ./docker/pgadmin:/var/lib/pgadmin/storage
     environment:
       PGADMIN_DEFAULT_EMAIL: root
       PGADMIN_DEFAULT_PASSWORD: root
 
   racoon:
-    build: ./racoon
+    build: .
     container_name: racoon
     ports:
       - 5000:5000
-    volumes:
-      - ../../:/app
     environment:
-      FLASK_ENV: debug
-    command: waitress-serve manage:app
+      FLASK_CONFIG: debug
+      FLASK_DEBUG: 1
+      FLASK_APP: manage.py
+    command: flask run --host=0.0.0.0

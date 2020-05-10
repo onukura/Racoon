@@ -5,7 +5,7 @@ jobs:
       - image: circleci/python:3.7.4
         environment:
           FLASK_CONFIG: debug
-          TEST_DATABASE_URL: postgresql://ubuntu@localhost/circle_test?sslmode=disable
+#          TEST_DATABASE_URL: postgresql://ubuntu@localhost/circle_test?sslmode=disable
 #      - image: circleci/postgres:9.6.5-alpine-ram
 #        environment:
 #          POSTGRES_USER: ubuntu
@@ -34,7 +34,11 @@ jobs:
 #          destination: tr1
 #      - store_test_results:
 #          path: test-reports/
-
+      - run:
+        command: |
+          . venv/bin/activate
+          python -m coverage run -m unittest discover
+          python -m codecov
 
   deploy:
     machine:

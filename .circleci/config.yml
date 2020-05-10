@@ -13,7 +13,6 @@ jobs:
 #          POSTGRES_PASSWORD: ''
     steps:
       - checkout
-      - run: mkdir test-reports
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
@@ -21,9 +20,6 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - run:
-          name: setup Heroku
-          command: bash .circleci/setup-heroku.sh
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
@@ -32,19 +28,38 @@ jobs:
           command: |
             . venv/bin/activate
             python -m unittest discover
-#      - store_artifacts:
-#          path: test-reports/
-#          destination: tr1
-#      - store_test_results:
-#          path: test-reports/
-      - add_ssh_keys:
-          fingerprints:
-            - 'ca:2a:a9:a8:99:ad:d0:d7:83:fe:c8:cd:5c:33:38:a5'
-      - deploy:
-          name: Deploy Master to Heroku
+
+  deploy:
+    steps:
+      - checkout
+      - run:
+          name: 'Install Heroku CLI, if necessary'
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              git push heroku master
-              heroku run python manage.py
-              heroku restart
+            if [[ $(command -v heroku) == "" ]]; then
+              curl https://cli-assets.heroku.com/install.sh | sh
+            else
+              echo "Heroku is already installed. No operation was performed."
             fi
+      - run:
+          name: heroku maintenance on
+          command: heroku maintenance:on --app ${HEROKU_APP_NAME}
+      - run:
+          name: Deploy to Heroku_Production
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+      - run:
+          name: heroku maintenance off
+          command: heroku maintenance:off --app ${HEROKU_APP_NAME}
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master

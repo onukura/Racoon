@@ -60,7 +60,11 @@ jobs:
           name: Deploy to Heroku_Production
           command: |
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+      - run:
+          name: Intialize App
+          command: |
             heroku run python manage.py initialize_db
+            heroku run python manage.py create_admin
       - run:
           name: heroku maintenance off
           command: heroku maintenance:off --app ${HEROKU_APP_NAME}

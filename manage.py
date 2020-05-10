@@ -42,6 +42,16 @@ def create_user():
 
 
 @manager.command
+def create_admin():
+    with app.app_context():
+        user = User(email="admin@admin.org", username="admin")
+        user.set_password("admin")
+        db.session.add(user)
+        db.session.commit()
+        print("Admin user added.")
+
+
+@manager.command
 def initialize_db():
     """
     Recreates a local database. You probably should not use this on

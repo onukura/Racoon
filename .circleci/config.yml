@@ -35,10 +35,10 @@ jobs:
 #      - store_test_results:
 #          path: test-reports/
       - run:
-        command: |
-          . venv/bin/activate
-          python -m coverage run -m unittest discover
-          python -m codecov
+          command: |
+            . venv/bin/activate
+            coverage run -m unittest discover
+            codecov
 
   deploy:
     machine:

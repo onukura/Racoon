@@ -9,12 +9,12 @@ import sys
 from racoon import create_app
 
 try:
-    ENV = os.environ["DEBUG"]
+    FLASK_CONFIG = os.environ["DEBUG"]
 except:
-    ENV = "debug"
+    FLASK_CONFIG = "debug"
 
 # Generate Flask App
-app = create_app(ENV)
+app = create_app(FLASK_CONFIG)
 
 
 if __name__ == "__main__":

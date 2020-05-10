@@ -71,6 +71,7 @@ def register_blueprints(app):
     # Registering the view and the api blueprints here
     with app.app_context():
         from racoon.view import views
+
         for k, v in views.items():
             app.register_blueprint(v)
             app.logger.info("blueprint registration: {}".format(k))

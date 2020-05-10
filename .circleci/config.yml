@@ -65,6 +65,7 @@ jobs:
           command: |
             heroku run -a $HEROKU_APP_NAME python manage.py initialize_db
             heroku run -a $HEROKU_APP_NAME python manage.py create_admin
+            heroku restart -a $HEROKU_APP_NAME
       - run:
           name: heroku maintenance off
           command: heroku maintenance:off --app ${HEROKU_APP_NAME}

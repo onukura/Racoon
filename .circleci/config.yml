@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Intialize App
           command: |
-            heroku git:remote
+            heroku git:remote -a $HEROKU_APP_NAME
             heroku run python manage.py initialize_db
             heroku run python manage.py create_admin
       - run:

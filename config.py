@@ -14,6 +14,8 @@ class BaseConfig:
     ALLOWED_EXTENSIONS = ["csv", "txt", "zip", "gz"]
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # CSRF key
+    WTF_CSRF_SECRET_KEY = "sdpg2398hswefwnjoj"
 
 
 class DebugConfig(BaseConfig):

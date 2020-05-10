@@ -15,7 +15,6 @@ def create_app(config_key="debug"):
     app.config.from_object(_config)  # Enabling config initiation
     register_extension(app)
     register_blueprints(app)
-    register_cli(app)
     return app
 
 
@@ -76,14 +75,6 @@ def register_blueprints(app):
             app.register_blueprint(v)
             app.logger.info("blueprint registration: {}".format(k))
     app.logger.info("register_blueprints done")
-    return None
-
-
-def register_cli(app):
-    from racoon.clis import bp_cli as cli_blueprint
-
-    app.register_blueprint(cli_blueprint)
-    app.logger.info("register_cli_command done")
     return None
 
 

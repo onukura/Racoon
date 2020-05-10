@@ -7,6 +7,18 @@
   </ul>
 
   <ul class="navbar-nav ml-auto">
+    {% if current_user.is_authenticated %}
+      <li class="nav-item">
+        <a class="btn btn-navbar btn-outline-danger" href="{{ url_for("bp_auth.logout", _external=True) }}">Logout</a>
+      </li>
+    {% else %}
+      <li class="nav-item">
+        <a class="btn btn-navbar btn-outline-primary" href="{{ url_for("bp_auth.login", _external=True) }}">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="btn btn-navbar btn-outline-success" href="{{ url_for("bp_auth.register", _external=True) }}">Signup</a>
+      </li>
+    {% endif %}
     <li class="nav-item">
       <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
               class="fas fa-th-large"></i></a>

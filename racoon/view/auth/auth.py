@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, flash, abort, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired
 
+from racoon.extensions import db, login_manager
 from racoon.models.user import User
+from racoon.view.auth.forms import LoginForm, RegistrationForm
+
 
 bp_auth = Blueprint("bp_auth", __name__)
 
 
-class LoginForm(FlaskForm):
-    username = StringField("username", validators=[DataRequired()])
-    password = PasswordField("password", validators=[DataRequired()])
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 @bp_auth.route("/login", methods=["GET", "POST"])
@@ -30,21 +30,26 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for("bp_index.index", _external=True))
+    return render_template("login.html", form=form)
 
-    return render_template("login.html", title="Sign In", form=form)
 
-
-@bp_auth.route('/logout')
+@bp_auth.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('bp_index.index', _external=True))
+    return redirect(url_for("bp_index.index", _external=True))
 
 
 @bp_auth.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("register.html")
-
-
-def is_safe_url(next):
-    # TODO implement is_url_safe http://flask.pocoo.org/snippets/62/
-    return True
+    if current_user.is_authenticated:
+        return redirect(url_for("bp_index.index", _external=True))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        form.validate_email(form.email)
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("Congratulations, you are now a registered user!")
+        return redirect(url_for("login"))
+    return render_template("register.html", form=form)

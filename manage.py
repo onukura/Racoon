@@ -4,9 +4,12 @@ to this file, which will pick up the lazysensor to run their servers.
 """
 
 import os
-import sys
+
+from flask_script import Manager
 
 from racoon import create_app
+from racoon.extensions import db
+from racoon.models.user import User
 
 try:
     FLASK_CONFIG = os.environ["DEBUG"]
@@ -16,12 +19,45 @@ except:
 # Generate Flask App
 app = create_app(FLASK_CONFIG)
 
+manager = Manager(app)
+
+
+@manager.command
+def create_user():
+    with app.app_context():
+        if User.query.all():
+            create = input("A user already exists! Create another? (y/n):")
+            if create == "n":
+                return
+        username = input("Enter username: ")
+        email = input("Enter email address: ")
+        password = input("Password: ")
+        assert password == input("Password (again): ")
+
+        user = User(email=email, username=username, group_id=0)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        print("User added.")
+
+
+@manager.command
+def initialize_db():
+    """
+    Recreates a local database. You probably should not use this on
+    production.
+    """
+    with app.app_context():
+        app.logger.info("start recreate_db.")
+        db.drop_all()
+        app.logger.info("dropped all tables.")
+        db.create_all()
+        app.logger.info("recreated all tables.")
+        db.session.commit()
+        app.logger.info("recreate_db done")
+    print("Database initialized.")
+
 
 if __name__ == "__main__":
     # Import HTTP server module and run API
-    from waitress import serve
-
-    host = app.config["HOST"]
-    port = app.config["PORT"]
-    print(f"start serve host:{host} / port:{port}")
-    serve(app, host=host, port=port)
+    manager.run()

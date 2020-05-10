@@ -35,7 +35,7 @@ def login():
 
 @bp_auth.route('/register', methods=['GET', 'POST'])
 def register():
-
+    pass
 
 def is_safe_url(next):
     #TODO implement is_url_safe http://flask.pocoo.org/snippets/62/

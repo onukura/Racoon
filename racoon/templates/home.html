@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block custom_header %}
+{% endblock %}
+
+{% block custom_footer %}
+{% endblock %}
+
+{% block content_header %}
+  {% with content_header_name = "Home" %}
+    {% include "__content_header.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block custom_control_sidebar %}{% endblock %}
+
+{% block main_content %}
+  <!-- Timelime example  -->
+  <div class="row">
+    <div class="col-md-12">
+      <!-- The time line -->
+      <div class="timeline">
+        <!-- timeline time label -->
+        <div class="time-label">
+          <span class="bg-red">{{ now }}</span>
+        </div>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        {% for activity in activities %}
+        <div>
+          <i class="fas fa-user bg-gray"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fas fa-clock"></i> {{ activity.Activity.date }}</span>
+            <h3 class="timeline-header no-border"><a href="#">{{ activity.User.username }}</a> {{ activity.Activity.content }}</h3>
+          </div>
+        </div>
+        {% endfor %}
+        <!-- END timeline item -->
+        <!-- END timeline item -->
+        <div>
+          <i class="fas fa-clock bg-gray"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

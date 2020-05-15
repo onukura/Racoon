@@ -25,6 +25,7 @@ def create_user():
     with app.app_context():
         from racoon.extensions import db
         from racoon.models.user import User
+
         if User.query.all():
             create = input("A user already exists! Create another? (y/n):")
             if create == "n":
@@ -46,6 +47,7 @@ def create_admin():
     with app.app_context():
         from racoon.extensions import db
         from racoon.models.user import User
+
         user = User(email="admin@admin.org", username="admin", role_id=0)
         user.set_password("admin")
         db.session.add(user)
@@ -58,12 +60,15 @@ def init_user():
     with app.app_context():
         from racoon.extensions import db
         from racoon.models.user import UserGroup, UserRole
+
         db.session.add(UserGroup(id=0, name="public"))
-        db.session.add_all([
-            UserRole(id=0, name="admin"),
-            UserRole(id=1, name="manager"),
-            UserRole(id=2, name="guest"),
-        ])
+        db.session.add_all(
+            [
+                UserRole(id=0, name="admin"),
+                UserRole(id=1, name="manager"),
+                UserRole(id=2, name="guest"),
+            ]
+        )
     create_admin()
     print("Tables for users initialized.")
 
@@ -76,6 +81,7 @@ def recreate_db():
     """
     with app.app_context():
         from racoon.extensions import db
+
         app.logger.info("start recreate_db.")
         db.drop_all()
         app.logger.info("dropped all tables.")
@@ -99,6 +105,7 @@ def create_dummy_data():
         from racoon.extensions import db
         from racoon.models.user import User
         from racoon.models.activity import Activity
+
         # Add User
         user1 = User(email="hoge1@hoge1.org", username="hoge1", role_id=1)
         user1.set_password("hoge1")
@@ -107,13 +114,17 @@ def create_dummy_data():
         db.session.add_all([user1, user2])
         db.session.commit()
         # Add activities
-        db.session.add_all([
-            Activity(id=i,
-                     date=datetime.datetime(2020, 5, 1, i, 10, 10),
-                     content=f"activity_{i}",
-                     user_id=int(i % 3 + 1))
-            for i in range(24)
-        ])
+        db.session.add_all(
+            [
+                Activity(
+                    id=i,
+                    date=datetime.datetime(2020, 5, 1, i, 10, 10),
+                    content=f"activity_{i}",
+                    user_id=int(i % 3 + 1),
+                )
+                for i in range(24)
+            ]
+        )
         db.session.commit()
     print("dummy date created.")
 

@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('user_role.id'), default=0)
     group_id = db.Column(db.Integer, db.ForeignKey('user_group.id'), default=0)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    from_ = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
     def get_id(self):
         return self.id
@@ -42,3 +43,20 @@ class UserGroup(db.Model):
     __tablename__ = "user_group"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    from_ = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+
+
+class UserTeam(db.Model):
+    __tablename__ = "user_team"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    from_ = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    is_active = db.Column(db.Boolean, default=True)
+
+
+class TeamMember(db.Model):
+    __tablename__ = "team_member"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    team_id = db.Column(db.Integer, db.ForeignKey("user_team.id"))
+    from_ = db.Column(db.DateTime, default=datetime.datetime.utcnow())

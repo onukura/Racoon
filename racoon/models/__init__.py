@@ -1,12 +1,13 @@
-from racoon.models.user import User, UserGroup, UserRole
+from racoon.models.user import User, Roles, UserGroup, UsersRoles
 from racoon.models.competition import Competition, CompetitionAttendee, CompetitionScore
 from racoon.models.activity import Activity
 
 
 __all__ = [
     User,
+    Roles,
     UserGroup,
-    UserRole,
+    UsersRoles,
     Competition,
     CompetitionAttendee,
     CompetitionScore,

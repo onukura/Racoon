@@ -9,7 +9,7 @@ from racoon.models.activity import Activity
 
 
 class CreateDummyData(Command):
-    """ Initialize the database."""
+    """ Create dummy data for test."""
 
     def run(self):
         create_dummy_data()

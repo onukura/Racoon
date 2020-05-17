@@ -6,7 +6,7 @@ from racoon.models.user import User, Roles
 
 
 class CreateUserCommand(Command):
-    """ Initialize the database."""
+    """ Create new user."""
 
     def run(self):
         create_user()
@@ -23,6 +23,11 @@ def create_user():
     assert password == input("Password (again): ")
     role_name = input("Role: ")
     role = Roles.query.filter(Roles.name == role_name).first()
+    if not role:
+        print(
+            "error: invalid role. please choose from 'guest', 'member', 'creator', 'manager', 'admin'"
+        )
+        return None
     user = User(email=email, username=username, group_id=0)
     user.set_password(password)
     user.roles.append(role)

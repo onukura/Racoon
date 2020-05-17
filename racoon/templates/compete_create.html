@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block custom_header %}
+{% endblock %}
+
+{% block custom_footer %}
+{% endblock %}
+
+{% block content_header %}
+  {% with content_header_name = "Create Competition" %}
+    {% include "__content_header.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block custom_control_sidebar %}{% endblock %}
+
+{% block main_content %}
+  <div class="row">
+    <div class="col-md-12">
+      <!-- general form elements disabled -->
+      <div class="card card-warning">
+        <div class="card-header">
+          <h3 class="card-title">Competition Settings</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <form role="form">
+            <div class="row">
+              <div class="col-sm-12">
+                <!-- text input -->
+                <div class="form-group">
+                  <label>Competition Name</label>
+                  <input type="text" class="form-control" placeholder="Enter ...">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card card-primary card-outline card-outline-tabs">
+                  <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Description</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Preview</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-three-tabContent">
+                      <!-- textarea -->
+                      <div class="form-group">
+                        <textarea class="form-control" rows="3" id="description_md" placeholder="This competition is ..."></textarea>
+                      </div>
+                      <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
+                        <div class="preview" id="marked-preview"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.card -->
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <!-- checkbox -->
+                <div class="form-group">
+                  <label class="form-check-label">Type</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Regression</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Classification</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <!-- select -->
+                <div class="form-group">
+                  <label>Score Metric</label>
+                  <select class="form-control" id="metric_selection"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row"></div>
+            <div class="form-group">
+              <label for="exampleInputFile">File input</label>
+              <div class="input-group">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="exampleInputFile">
+                  <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                  <span class="input-group-text" id="">Upload</span>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+
+    <script>
+        function generate_preview() {
+            var markdown = $('#description_md').val();
+            var html = marked(markdown)
+            $('#marked-preview').html(html);
+        }
+        $("#custom-tabs-three-profile").click(function () {
+            generate_preview();
+        });
+
+        var arr_regression = [
+            {val:"mae", txt:"Mean Absolute Error"},
+            {val:"mse", txt:"Mean Squared Error"},
+            {val:"msle", txt:"Mean Squared Logarithmic Error"},
+            {val:"rmse", txt:"Root Mean Squared Error"},
+        ];
+        var arr_classification = [
+            {val:"accuracy", txt:"Accuracy"},
+            {val:"auc", txt:"Area Under Curve(AUC)"},
+            {val:"f1", txt:"F1 Score"},
+            {val:"logloss", txt:"Log Loss"},
+        ];
+
+        function createSelectBox() {
+            var arr;
+            var compete_type;
+            $(':radio:checked').each(function() {
+                compete_type = $(this).val();
+            });
+            if (type === "regression") {
+                arr = arr_regression;
+            }else if (type === "classification") {
+                arr = arr_classification;
+            }else {
+                return;
+            }
+            for(var i=0;i<arr.length;i++){
+                $("<option>").attr({
+                    value: arr[i].val,
+                    text: arr[i].txt
+                }).appendTo("#metric_selection")
+            }
+        }
+        $("#type_selection").change(function () {
+            createSelectBox()
+        })
+    </script>
+
+{% endblock %}

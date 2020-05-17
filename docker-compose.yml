@@ -46,7 +46,7 @@ services:
     ports:
       - 5000:5000
     environment:
-      FLASK_CONFIG: debug
-      FLASK_DEBUG: 1
+      FLASK_CONFIG: deploy
+      FLASK_DEBUG: 0
       FLASK_APP: manage.py
     command: flask run --host=0.0.0.0

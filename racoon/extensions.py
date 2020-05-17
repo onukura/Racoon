@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from flask_user import UserManager
 from flask_wtf.csrf import CSRFProtect
 
 
@@ -29,15 +28,5 @@ def register_extensions(app):
 
     if app.config["DEBUG"]:
         pass
-
-    # Setup Flask-User to handle user account related forms
-    from racoon.models.user import User
-
-    # Setup Flask-User
-    user_manager = UserManager(app, db, User)
-
-    @app.context_processor
-    def context_processor():
-        return dict(user_manager=user_manager)
 
     return None

@@ -1,7 +1,7 @@
 import datetime
 from hashlib import md5
-from flask_user import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 from racoon.extensions import db
 
@@ -39,9 +39,9 @@ class User(db.Model, UserMixin):
 # Define the Role data model
 class Roles(db.Model):
     __tablename__ = "roles"
-    id = db.Column(db.Integer(), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(
-        db.String(50), nullable=False, server_default="", unique=True
+        db.String, nullable=False, server_default="", unique=True
     )  # for @roles_accepted()
     label = db.Column(db.Unicode(255), server_default="")  # for display purposes
 
@@ -50,8 +50,8 @@ class Roles(db.Model):
 class UsersRoles(db.Model):
     __tablename__ = "users_roles"
     id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey("user.id", ondelete="CASCADE"))
-    role_id = db.Column(db.Integer(), db.ForeignKey("roles.id", ondelete="CASCADE"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id", ondelete="CASCADE"))
 
 
 class UserGroup(db.Model):

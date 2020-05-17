@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 from flask import Blueprint, render_template
-from flask_login import current_user, login_required
 from sqlalchemy import desc
 
 from racoon.extensions import db
@@ -14,7 +13,6 @@ bp_home = Blueprint("bp_home", __name__)
 
 @bp_home.route("/")
 @bp_home.route("/home")
-@login_required
 def home():
     activities = (
         db.session.query(Activity, User)

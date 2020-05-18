@@ -2,7 +2,7 @@
 
 {% block custom_header %}
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/highlight/styles/github.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/daterangepicker/daterangepicker.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/jquery-ui/jquery-ui.min.css') }}">
 {% endblock %}
 
 {% block custom_footer %}
@@ -11,18 +11,7 @@
   <script src="{{ url_for('static', filename='js/lib/DOMPurify/purify.js') }}"></script>
   <script src="{{ url_for('static', filename='js/private/compete_create.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='plugins/daterangepicker/daterangepicker.js') }}"></script>
-  <script>
-      $(function () {
-          $('#compete_date_range').daterangepicker({
-              timePicker: true,
-              timePickerIncrement: 30,
-              locale: {
-                  format: 'YYYY/MM/DD hh:mm A'
-              }
-          })
-      })
-  </script>
+  <script src="{{ url_for('static', filename='plugins/jquery-ui/jquery-ui.min.js') }}"></script>
 {% endblock %}
 
 {% block content_header %}
@@ -36,6 +25,18 @@
 {% block main_content %}
   <div class="row">
     <div class="col-md-12">
+
+      <!-- Custom Error Message -->
+      {% if form.errors|length > 0 %}
+        {% for key, error in form.errors.items() %}
+          <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-ban"></i>{{ key }}</h5>
+            {{ error[0] }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
       <!-- general form elements disabled -->
       <div class="card card-gray">
         <div class="card-header">
@@ -43,13 +44,14 @@
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <form role="form" action="/compete/create" method="post">
+          <form role="form" action="{{ url_for("bp_compete.create", _external=True) }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="row">
               <div class="col-sm-12">
                 <!-- text input -->
                 <div class="form-group">
-                  <label>Competition Name</label>
-                  <input type="text" class="form-control" placeholder="Enter ...">
+                  <label>*Competition Name</label>
+                  {{ form.name }}
                 </div>
                 <!-- /.form group -->
               </div>
@@ -59,7 +61,7 @@
             <div class="row">
               <div class="col-sm-6">
                 <label for="description_md">Description(Input)</label>
-                <textarea class="form-control" rows="3" id="description_md" placeholder="This competition is ..."></textarea>
+                {{ form.description }}
               </div>
               <div class="col-sm-6">
                 <label for="description_md">Description(Preview)</label>
@@ -72,25 +74,16 @@
               <!-- Competition Type -->
               <div class="col-sm-3">
                 <!-- radio -->
-                <div class="form-group">
-                  <label class="form-radio-label">Type</label>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="radio1" checked value="regression">
-                    <label class="form-check-label">Regression</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="radio1" value="classification">
-                    <label class="form-check-label">Classification</label>
-                  </div>
-                </div>
+                <label class="form-radio-label">*Type</label>
+                {{ form.eval_type }}
                 <!-- /.form group -->
               </div>
               <!-- Score Metric -->
               <div class="col-sm-3">
                 <!-- select -->
                 <div class="form-group">
-                  <label>Score Metric</label>
-                  <select class="form-control" id="metric_selection"></select>
+                  <label>*Score Metric</label>
+                  {{ form.metric }}
                 </div>
                 <!-- /.form group -->
               </div>
@@ -100,12 +93,10 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="InputFileAnswer">Answer file (csv, txt, tsv)</label>
-                  <div class="input-group">
-                    <div class="custom-file">
-                      <input type="file" class="custom-file-input" id="data_answer">
-                      <label class="custom-file-label" for="InputFileAnswer">Choose file</label>
-                    </div>
+                  <label for="InputFileAnswer">*Answer file (csv, txt, tsv)</label>
+                  <div class="custom-file">
+                    {{ form.file_answer }}
+                    <label class="custom-file-label" for="InputFileAnswer">Choose file</label>
                   </div>
                 </div>
                 <!-- /.form group -->
@@ -116,11 +107,9 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="InputFileData">Data for competition (train, test, val, etc...)</label>
-                  <div class="input-group">
-                    <div class="custom-file">
-                      <input type="file" class="custom-file-input" id="data_compete">
-                      <label class="custom-file-label" for="InputFileData">Choose file</label>
-                    </div>
+                  <div class="custom-file">
+                    {{ form.file_data }}
+                    <label class="custom-file-label" for="InputFileData">Choose file</label>
                   </div>
                 </div>
                 <!-- /.form group -->
@@ -128,15 +117,15 @@
             </div>
 
             <div class="row">
-              <div class="col-sm-3">
+              <div class="col-sm-6" id="div_expired">
                 <!-- Date and time range -->
                 <div class="form-group">
-                  <label>Competition Period</label>
+                  <label>Competition Expired Date (Blank means no deadline.)</label>
                   <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="far fa-clock"></i></span>
                     </div>
-                    <input type="text" class="form-control float-right" id="compete_date_range">
+                    {{ form.expired_date }}
                   </div>
                   <!-- /.input group -->
                 </div>

@@ -43,17 +43,18 @@ var type_list = [
 ];
 
 function createSelectBox() {
-    var compete_type = $('input:radio[name="radio1"]:checked').val();
-    $("#metric_selection").children().remove();
+    var compete_type = $('input:radio[name="eval_type"]:checked').val();
+    $("#metric").children().remove();
     for(var i=0;i<type_list.length;i++){
         if (compete_type === type_list[i].type) {
-            $('#metric_selection').append($('<option>').attr({ value: type_list[i].val }).text(type_list[i].txt));
+            $('#metric').append($('<option>').attr({ value: type_list[i].val, name: "metric" }).text(type_list[i].txt));
         }
     }
 }
 $(function () {
-    createSelectBox()
+    createSelectBox();
+    $("#expired_date").datepicker();
 })
-$('input:radio[name="radio1"]').change(function () {
+$('input:radio[name="eval_type"]').change(function () {
     createSelectBox()
 })

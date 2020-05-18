@@ -7,9 +7,18 @@
 {% endblock %}
 
 {% block content_header %}
-  {% with content_header_name = "Competitions" %}
-    {% include "__content_header.html" %}
-  {% endwith %}
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">Competitions</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-2 offset-4">
+          <a href="/compete/create" class="btn btn-lg btn-success">Open Competition</a>
+        </div>
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
 {% endblock %}
 
 {% block custom_control_sidebar %}{% endblock %}

@@ -27,7 +27,6 @@ def create_users():
     manager_role = find_or_create_role("manager", "Manager")
     creator_role = find_or_create_role("creator", "Creator")
     member_role = find_or_create_role("member", "Member")
-    guest_role = find_or_create_role("guest", "Guest")
     # Add Groups
     create_default_groups()
     # Add admin users

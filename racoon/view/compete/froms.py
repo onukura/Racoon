@@ -28,8 +28,7 @@ class CreateCompetitionForm(FlaskForm):
         render_kw={"class": "form-check"},
     )
     metric = SelectField(
-        "compete_metric",
-        render_kw={"class": "form-control", "id": "metric"},
+        "compete_metric", render_kw={"class": "form-control", "id": "metric"},
     )
     file_answer = FileField(
         validators=[
@@ -41,7 +40,7 @@ class CreateCompetitionForm(FlaskForm):
     file_data = FileField(render_kw={"class": "custom-file-input"})
     expired_date = DateField(
         "compete_date_range",
-        format='%m/%d/%Y',
-        validators= [Optional()],
+        format="%m/%d/%Y",
+        validators=[Optional()],
         render_kw={"class": "form-control float-right"},
     )

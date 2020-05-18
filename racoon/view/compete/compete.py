@@ -24,7 +24,7 @@ def create():
     else:
         form.metric.choices = [(form.metric.data, form.metric.data)]
         if form.validate_on_submit():
-            #TODO
+            # TODO
             data = form.file_data
             return redirect(url_for("bp_compete.compete", _external=True))
         else:

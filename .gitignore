@@ -5,3 +5,6 @@ __pycache__
 *.db
 /.coverage
 /coverage.xml
+/docker/minio/
+/docker/postgres/data/
+/docker/pgadmin/

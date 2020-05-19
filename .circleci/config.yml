@@ -45,15 +45,15 @@ jobs:
           name: Deploy to Heroku_Production
           command: |
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
-      - run:
-          name: Intialize App
-          command: |
-            export FLASK_COMFIG=debug
-            heroku run -a $HEROKU_APP_NAME python manage.py init_db
-            heroku restart -a $HEROKU_APP_NAME
-      - run:
-          name: heroku maintenance off
-          command: heroku maintenance:off --app ${HEROKU_APP_NAME}
+#      - run:
+#          name: Intialize App
+#          command: |
+#            export FLASK_COMFIG=debug
+#            heroku run -a $HEROKU_APP_NAME python manage.py init_db
+#            heroku restart -a $HEROKU_APP_NAME
+#      - run:
+#          name: heroku maintenance off
+#          command: heroku maintenance:off --app ${HEROKU_APP_NAME}
 
 workflows:
   version: 2

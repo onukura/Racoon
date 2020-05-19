@@ -5,12 +5,6 @@ jobs:
       - image: circleci/python:3.7.4
         environment:
           FLASK_CONFIG: debug
-#          TEST_DATABASE_URL: postgresql://ubuntu@localhost/circle_test?sslmode=disable
-#      - image: circleci/postgres:9.6.5-alpine-ram
-#        environment:
-#          POSTGRES_USER: ubuntu
-#          POSTGRES_DB: circle_test
-#          POSTGRES_PASSWORD: ''
     steps:
       - checkout
       - run: mkdir test-reports
@@ -25,15 +19,6 @@ jobs:
           key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - 'venv'
-      - run:
-          command: |
-            . venv/bin/activate
-            python -m unittest discover
-#      - store_artifacts:
-#          path: test-reports/
-#          destination: tr1
-#      - store_test_results:
-#          path: test-reports/
       - run:
           command: |
             . venv/bin/activate
@@ -63,6 +48,7 @@ jobs:
       - run:
           name: Intialize App
           command: |
+            export FLASK_COMFIG=debug
             heroku run -a $HEROKU_APP_NAME python manage.py init_db
             heroku restart -a $HEROKU_APP_NAME
       - run:

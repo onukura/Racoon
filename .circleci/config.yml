@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Intialize App
           command: |
-            heroku run -a $HEROKU_APP_NAME python manage.py init_app
+            heroku run -a $HEROKU_APP_NAME python manage.py init_db
             heroku run -a $HEROKU_APP_NAME python manage.py create_dummy_data
             heroku restart -a $HEROKU_APP_NAME
       - run:

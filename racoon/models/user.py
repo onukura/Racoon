@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, unique=True)
     username = db.Column(db.String, unique=True)
     password_hash = db.Column(db.String(128))
-    group_id = db.Column(db.Integer, db.ForeignKey("user_group.id"), default=0)
+    group_id = db.Column(db.Integer, db.ForeignKey("user_group.id"), default=1)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     from_ = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     # Relationships

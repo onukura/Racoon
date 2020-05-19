@@ -27,7 +27,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
-    user: root
 
   pgadmin4:
     image: dpage/pgadmin4:latest
@@ -45,8 +44,10 @@ services:
     container_name: racoon
     ports:
       - 5000:5000
+    depends_on:
+      - postgresql
     environment:
       FLASK_CONFIG: deploy
-      FLASK_DEBUG: 0
-      FLASK_APP: manage.py
-    command: flask run --host=0.0.0.0
+    command: >
+      bash -c "python manage.py init_db &&
+      waitress-serve --listen=0.0.0.0:5000 manage:app"

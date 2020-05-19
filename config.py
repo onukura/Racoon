@@ -5,8 +5,6 @@ class BaseConfig:
     # Root Dir of this app
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     # server configuration
-    HOST = "127.0.0.1"
-    PORT = 5000
     SECRET_KEY = "fdvsegserw5w45ear569rseruitn6dnc76tw"
     # Directory path for logger
     LOG_DIR = os.path.join(ROOT_DIR, "log")
@@ -20,20 +18,20 @@ class BaseConfig:
 
 class DebugConfig(BaseConfig):
     DEBUG = True
+    # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
 
 
 class DeployConfig(BaseConfig):
     DEBUG = False
+    # DB
     DB_USER = "postgres"
     DB_PASSWORD = "postgres"
-    DB_HOST = "postgres"
+    DB_HOST = "postgresql"
     DB_PORT = 5432
-    DB_NAME = "dslbp"
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{}:{}@{}:{}/{}".format(
-        DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
-    )
+    DB_NAME = "racoon"
     # SQLAlchemy
+    SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_recycle": 120,
         "pool_timeout": 900,

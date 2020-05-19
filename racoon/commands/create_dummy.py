@@ -26,7 +26,7 @@ def generate_user(email, username, password, role_name):
     assert role is not None
     user = User(email=email, username=username)
     user.set_password(password)
-    user.apppend(role)
+    user.roles.append(role)
     return user
 
 

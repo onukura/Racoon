@@ -14,6 +14,10 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # CSRF key
     WTF_CSRF_SECRET_KEY = "sdpg2398hswefwnjoj"
+    # MINIO
+    MINIO_ENDPOINT = "minio:9000"
+    MINIO_ACCESS_KEY = "123456789"
+    MINIO_SECRET_KEY = "123456789"
 
 
 class DebugConfig(BaseConfig):

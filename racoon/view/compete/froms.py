@@ -39,8 +39,13 @@ class CreateCompetitionForm(FlaskForm):
     )
     file_data = FileField(render_kw={"class": "custom-file-input"})
     expired_date = DateField(
-        "compete_date_range",
+        "expired_date",
         format="%m/%d/%Y",
         validators=[Optional()],
         render_kw={"class": "form-control float-right"},
+    )
+    access_level = SelectField(
+        "access_level",
+        choices=[(1, "Public"), (2, "Group"), (3, "Private")],
+        render_kw={"class": "form-control", "id": "access_level"}
     )

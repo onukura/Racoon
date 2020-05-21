@@ -1,6 +1,11 @@
 from racoon.models.user import User, Roles, UserGroup, UsersRoles
-from racoon.models.competition import Competition, CompetitionAttendee, CompetitionScore
-from racoon.models.activity import Activity
+from racoon.models.competition import (
+    Competition,
+    CompetitionAttendee,
+    CompetitionScore,
+    CompetitionActivity,
+)
+from racoon.models.activity import GeneralActivity
 
 
 __all__ = [
@@ -11,5 +16,5 @@ __all__ = [
     Competition,
     CompetitionAttendee,
     CompetitionScore,
-    Activity,
+    GeneralActivity,
 ]

@@ -9,9 +9,10 @@
   <script src="{{ url_for('static', filename='js/lib/marked/marked.min.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/highlight/highlight.pack.js') }}"></script>
   <script src="{{ url_for('static', filename='js/lib/DOMPurify/purify.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/private/compete_create.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/private/utils/md.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/private/compete/create.js') }}"></script>
 {% endblock %}
 
 {% block content_header %}
@@ -57,15 +58,39 @@
               </div>
             </div>
 
-            <!-- Competition Description -->
+            <!-- Competition Description for overview -->
             <div class="row">
               <div class="col-sm-6">
-                <label for="description_md">Description(Input)</label>
-                {{ form.description }}
+                <label>Description for overview(Input)</label>
+                {{ form.description_overview }}
               </div>
               <div class="col-sm-6">
-                <label for="description_md">Description(Preview)</label>
-                <div id="marked-preview" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
+                <label>Description for overview(Preview)</label>
+                <div id="marked-preview-overview" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
+              </div>
+            </div>
+
+            <!-- Competition Description for evaluation -->
+            <div class="row">
+              <div class="col-sm-6">
+                <label>Description for evaluation(Input)</label>
+                {{ form.description_eval }}
+              </div>
+              <div class="col-sm-6">
+                <label>Description for evaluation(Preview)</label>
+                <div id="marked-preview-eval" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
+              </div>
+            </div>
+
+            <!-- Competition Description for data -->
+            <div class="row">
+              <div class="col-sm-6">
+                <label>Description for data(Input)</label>
+                {{ form.description_data }}
+              </div>
+              <div class="col-sm-6">
+                <label>Description for data(Preview)</label>
+                <div id="marked-preview-data" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
               </div>
             </div>
 
@@ -128,6 +153,17 @@
                     {{ form.expired_date }}
                   </div>
                   <!-- /.input group -->
+                </div>
+                <!-- /.form group -->
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <!-- select -->
+                <div class="form-group">
+                  <label>*Access Level</label>
+                  {{ form.access_level }}
                 </div>
                 <!-- /.form group -->
               </div>

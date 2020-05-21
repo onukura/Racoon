@@ -4,7 +4,7 @@ build:
 release:
   command:
     - pip install gunicorn
-    - python manage.py init_db
+    - python manage.py init_app
   image: web
 run:
   web: gunicorn manage:app --log-file -

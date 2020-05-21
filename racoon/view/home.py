@@ -5,7 +5,7 @@ from sqlalchemy import desc
 
 from racoon.extensions import db
 from racoon.models.user import User
-from racoon.models.activity import Activity
+from racoon.models.activity import GeneralActivity
 
 
 bp_home = Blueprint("bp_home", __name__)
@@ -15,9 +15,9 @@ bp_home = Blueprint("bp_home", __name__)
 @bp_home.route("/home")
 def home():
     activities = (
-        db.session.query(Activity, User)
-        .outerjoin(User, Activity.user_id == User.id)
-        .order_by(desc(Activity.date))
+        db.session.query(GeneralActivity, User)
+        .outerjoin(User, GeneralActivity.user_id == User.id)
+        .order_by(desc(GeneralActivity.date))
         .limit(20)
     )
     now = datetime.datetime.now().strftime("%Y-%m-%d")

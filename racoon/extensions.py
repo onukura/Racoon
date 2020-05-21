@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from flask_minio import Minio
 
 
 # create instance
@@ -9,6 +10,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 csrf = CSRFProtect()
+storage = Minio()
 
 
 def register_extensions(app):
@@ -25,6 +27,9 @@ def register_extensions(app):
 
     # CSRF protectioin
     csrf.init_app(app)
+
+    # Minio extension
+    storage.init_app(app)
 
     if app.config["DEBUG"]:
         pass

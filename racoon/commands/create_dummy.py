@@ -5,7 +5,7 @@ from flask_script import Command
 
 from racoon.extensions import db
 from racoon.models.user import User, Roles
-from racoon.models.activity import Activity
+from racoon.models.activity import GeneralActivity
 
 
 class CreateDummyData(Command):
@@ -52,7 +52,7 @@ def create_dummy_user():
 def create_dummy_activity():
     db.session.add_all(
         [
-            Activity(
+            GeneralActivity(
                 id=i,
                 date=datetime.datetime(2020, 5, 1, i, 10, 10),
                 content=f"activity_{i}",

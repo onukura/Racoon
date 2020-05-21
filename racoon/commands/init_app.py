@@ -23,7 +23,6 @@ def init_app():
     init_bucket()
 
 
-
 def create_users():
     """ Create admin users """
     # Adding roles

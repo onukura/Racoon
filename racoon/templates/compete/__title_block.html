@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-sm-12">
+    <!-- Widget: user widget style 1 -->
+    <div class="card card-widget widget-user">
+      <!-- Add the bg color to the header using any of the bg-* classes -->
+      <div class="widget-user-header bg-black" style="background: url({{ url_for('static', filename='img/compete/bg_1.png') }}) center center;">
+        <div style="vertical-align: middle"><h1 style="text-align: left;">{{ compete.friendly_name }}</h1></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+          <ul class="nav justify-content-start">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Overview</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_compete.data', compete_name=compete.name, _external=True) }}">Data</a>
+            </li>
+            <li class="nav-item hidden">
+              <a class="nav-link" href="{{ url_for('bp_compete.notebook', compete_name=compete.name, _external=True) }}">Notebook</a>
+            </li>
+            <li class="nav-item hidden">
+              <a class="nav-link" href="{{ url_for('bp_compete.discussion', compete_name=compete.name, _external=True) }}">Discussion</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_compete.leaderboard', compete_name=compete.name, _external=True) }}">Leaderboard</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-sm-4">
+          <ul class="nav justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('bp_compete.mysubmission', compete_name=compete.name, _external=True) }}">My Submisisons</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bg-primary" href="{{ url_for('bp_compete.submission', compete_name=compete.name, _external=True) }}">Submit Predictions</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.widget-user -->
+  </div>
+</div>

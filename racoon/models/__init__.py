@@ -1,5 +1,10 @@
 from racoon.models.user import User, Roles, UserGroup, UsersRoles
-from racoon.models.competition import Competition, CompetitionAttendee, CompetitionScore, CompetitionActivity
+from racoon.models.competition import (
+    Competition,
+    CompetitionAttendee,
+    CompetitionScore,
+    CompetitionActivity,
+)
 from racoon.models.activity import GeneralActivity
 
 

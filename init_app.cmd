@@ -1,0 +1,1 @@
+docker-compose exec racoon python manage.py init_app

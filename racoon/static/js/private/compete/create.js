@@ -1,34 +1,12 @@
-// Extend marked.js
-function marked_js_render(){
-    // marked.js + highlight.js
-    var renderer = new marked.Renderer()
-    // code syntax highlight
-    renderer.code = function (code, language) {
-        return '<pre' + '><code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
-    };
-    // table tag
-    renderer.table = function(header, body) {
-        if (body) body = '<tbody>' + body + '</tbody>';
-
-        return '<table class="table table-hover">'
-            + '<thead>'
-            + header
-            + '</thead>'
-            + body
-            + '</table>';
-    };
-    marked.setOptions({
-        renderer: renderer,
-    });
-}
-$(function () {
-    marked_js_render();
-});
-
 // Markdown to HTML
-$("#description_md").keyup(function() {
-    let markdown = $(this).val();
-    $('#marked-preview').html(DOMPurify.sanitize(marked(markdown)));
+$("#description_overview").keyup(function() {
+    $('#marked-preview-overview').html(DOMPurify.sanitize(marked($(this).val())));
+});
+$("#description_eval").keyup(function() {
+    $('#marked-preview-eval').html(DOMPurify.sanitize(marked($(this).val())));
+});
+$("#description_data").keyup(function() {
+    $('#marked-preview-data').html(DOMPurify.sanitize(marked($(this).val())));
 });
 
 var type_list = [

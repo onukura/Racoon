@@ -8,7 +8,9 @@ class Competition(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
     friendly_name = db.Column(db.String, nullable=True)
-    description = db.Column(db.String, nullable=True)
+    description_overview = db.Column(db.String, nullable=True)
+    description_eval = db.Column(db.String, nullable=True)
+    description_data = db.Column(db.String, nullable=True)
     creator_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     access_level = db.Column(db.Integer)  # 1:personal, 2:group, 3:public
     created_date = db.Column(db.DateTime, default=datetime.datetime.now())

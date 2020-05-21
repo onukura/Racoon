@@ -15,9 +15,22 @@ class CreateCompetitionForm(FlaskForm):
         validators=[DataRequired()],
         render_kw={"class": "form-control", "placeholder": "Competition Name"},
     )
-    description = StringField(
-        "compete_description",
-        render_kw={"class": "form-control", "placeholder": "Description"},
+    description_overview = StringField(
+        "compete_description_overview",
+        render_kw={"class": "form-control", "placeholder": "Description for overview"},
+        widget=TextArea(),
+    )
+    description_eval = StringField(
+        "compete_description_eval",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "Description for evaluation",
+        },
+        widget=TextArea(),
+    )
+    description_data = StringField(
+        "compete_description_data",
+        render_kw={"class": "form-control", "placeholder": "Description for data"},
         widget=TextArea(),
     )
     eval_type = RadioField(
@@ -47,5 +60,5 @@ class CreateCompetitionForm(FlaskForm):
     access_level = SelectField(
         "access_level",
         choices=[("1", "Public"), ("2", "Group"), ("3", "Private")],
-        render_kw={"class": "form-control", "id": "access_level"}
+        render_kw={"class": "form-control", "id": "access_level"},
     )

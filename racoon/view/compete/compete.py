@@ -108,7 +108,7 @@ def data_download(compete_name, filename):
     fileobj.seek(0)
     response = make_response(fileobj.read())
     response.headers.set('Content-Type', 'zip')
-    response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.basename(filename))
+    response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.splitext(os.path.basename(filename))[0])
     return response
 
 

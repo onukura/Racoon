@@ -53,7 +53,10 @@ function createSelectBox() {
 }
 $(function () {
     createSelectBox();
-    $("#expired_date").datepicker();
+    $("#expired_date").datepicker({
+        dateFormat: "yy-mm-dd",
+        minDate: 0,
+    });
 })
 $('input:radio[name="eval_type"]').change(function () {
     createSelectBox()

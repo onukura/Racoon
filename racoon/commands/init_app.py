@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
 from flask_script import Command
 
-from racoon.extensions import db
+from racoon.extensions import db, storage
 from racoon.models.user import User, Roles, UserGroup
 
 
-class InitDbCommand(Command):
+class InitAppCommand(Command):
     """ Initialize the database."""
 
     def run(self):
-        init_db()
+        init_app()
         print("Database has been initialized.")
 
 
-def init_db():
-    """ Initialize the database."""
+def init_app():
+    """ Initialize App."""
+    # DB initialize
     db.drop_all()
     db.create_all()
     create_users()
+    # Bucket Initialize
+    init_bucket()
+
 
 
 def create_users():
@@ -60,3 +64,13 @@ def create_default_groups():
     group = UserGroup(name="public")
     db.session.add(group)
     db.session.commit()
+
+
+def init_bucket():
+    """Initialize the Bucket"""
+    # Remove all existing bucket
+    buckets = storage.connection.list_buckets()
+    for bucket in buckets:
+        storage.connection.remove_bucket(bucket.name)
+    # Create default bucket
+    storage.connection.make_bucket("public")

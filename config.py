@@ -16,8 +16,9 @@ class BaseConfig:
     WTF_CSRF_SECRET_KEY = "sdpg2398hswefwnjoj"
     # MINIO
     MINIO_ENDPOINT = "minio:9000"
-    MINIO_ACCESS_KEY = "123456789"
-    MINIO_SECRET_KEY = "123456789"
+    MINIO_ACCESS_KEY = "minio"
+    MINIO_SECRET_KEY = "minio123"
+    MINIO_SECURE = False
 
 
 class DebugConfig(BaseConfig):
@@ -32,7 +33,7 @@ class DeployConfig(BaseConfig):
     DB_USER = "postgres"
     DB_PASSWORD = "postgres"
     DB_HOST = "postgresql"
-    DB_PORT = 5432
+    DB_PORT = "5432"
     DB_NAME = "racoon"
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

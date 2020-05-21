@@ -11,9 +11,9 @@ services:
 #      - ./docker/minio/data:/data
 #      - ./docker/minio/config:/root/.minio
     environment:
-      MINIO_ACCESS_KEY: 123456789
-      MINIO_SECRET_KEY: 123456789
-    command: server /export
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data
 
   postgresql:
     image: postgres:12
@@ -46,8 +46,9 @@ services:
       - 5000:5000
     depends_on:
       - postgresql
+      - minio
     environment:
       FLASK_CONFIG: deploy
     command: >
-      bash -c "python manage.py init_db &&
+      bash -c "python manage.py init_app &&
       waitress-serve --listen=0.0.0.0:5000 manage:app"

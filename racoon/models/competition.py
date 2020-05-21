@@ -33,3 +33,11 @@ class CompetitionScore(db.Model):
     competition_id = db.Column(db.Integer, db.ForeignKey("competition.id"))
     score = db.Column(db.Numeric, nullable=True)
     posted_date = db.Column(db.DateTime, default=datetime.datetime.now())
+
+
+class CompetitionActivity(db.Model):
+    __tablename__ = "competition_activity"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    competition_id = db.Column(db.Integer, db.ForeignKey("competition.id"))
+    content = db.Column(db.String, nullable=False)

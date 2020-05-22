@@ -79,7 +79,7 @@ def create():
             # Add this event to CompetitionActivity
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,
-                competition_id=compete_id,
+                competition_id=__compete.id,
                 content=f"Opened by {current_user.username}"
             )
             db.session.add(compete_activity)

@@ -14,7 +14,7 @@ from racoon.lib.utils import clean_str
 from racoon.view.auth.utils import login_or_role_erquired
 from racoon.view.compete.froms import CreateCompetitionForm
 from racoon.models.competition import Competition
-from racoon.models.user import User
+from racoon.models.activity import GeneralActivity
 from racoon.extensions import db, storage
 
 
@@ -65,6 +65,13 @@ def create():
                 length=sys.getsizeof(file_answer),
                 content_type="application/csv",
             )
+            general_acivity = GeneralActivity(
+                date=datetime.datetime.now(),
+                content=f"opened new competition '{form.name.data}'.",
+                user_id=current_user.id
+            )
+            db.session.add(general_acivity)
+            db.session.commit()
             return redirect(
                 url_for(
                     "bp_compete.overview", compete_name=compete_name, _external=True

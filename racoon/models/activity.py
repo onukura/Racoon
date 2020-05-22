@@ -9,4 +9,3 @@ class GeneralActivity(db.Model):
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     content = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    compete_id = db.Column(db.Integer, db.ForeignKey("competition.id"))

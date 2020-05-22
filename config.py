@@ -14,12 +14,17 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # CSRF key
     WTF_CSRF_SECRET_KEY = "sdpg2398hswefwnjoj"
-    # MINIO
+    # Storage
+    STORAGE_TYPE = "minio"  # minio or filesystem
+    # MINIO (if STORAGE_TYPE == "minio")
     MINIO_ENDPOINT = "minio:9000"
     MINIO_ACCESS_KEY = "minio"
     MINIO_SECRET_KEY = "minio123"
     MINIO_SECURE = False
     MINIO_UPLOAD_DATA_PATH = "upload"
+    # File System (if STORAGE_TYPE == "filesystem")
+    STORAGE_DIR = "/data"
+    UPLOAD_DATA_PATH = "upload"  # path will be /data/{compete_name}/upload
 
 
 class DebugConfig(BaseConfig):

@@ -24,6 +24,7 @@ bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")
 @bp_compete.route("/")
 @login_or_role_erquired("member")
 def list():
+
     return render_template("compete/list.html", user=current_user)
 
 

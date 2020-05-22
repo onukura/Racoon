@@ -14,7 +14,7 @@
           <h1 class="m-0 text-dark">Competitions</h1>
         </div><!-- /.col -->
         <div class="col-sm-2 offset-4">
-          <a href="/compete/create" class="btn btn-lg btn-success">Open Competition</a>
+          <a href="{{ url_for("bp_compete.create", _external=True) }}" class="btn btn-lg btn-success">Open Competition</a>
         </div>
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->

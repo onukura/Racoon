@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
 {% block custom_header %}
+  <link rel="stylesheet" href="{{ url_for("static", filename="plugins/semantic-ui/css/semantic.min.css") }}">
+  <link rel="stylesheet" href="{{ url_for("static", filename="plugins/datatables-semanticui/css/dataTables.semanticui.min.css") }}">
 {% endblock %}
 
 {% block custom_footer %}
+  <script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+  <script src="{{ url_for('static', filename='plugins/datatables-semanticui/js/dataTables.semanticui.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='plugins/semantic-ui/js/semantic.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/private/compete/list.js') }}"></script>
 {% endblock %}
 
 {% block content_header %}
@@ -14,7 +20,7 @@
           <h1 class="m-0 text-dark">Competitions</h1>
         </div><!-- /.col -->
         <div class="col-sm-2 offset-4">
-          <a href="/compete/create" class="btn btn-lg btn-success">Open Competition</a>
+          <a href="{{ url_for("bp_compete.create", _external=True) }}" class="btn btn-lg btn-success">Open Competition</a>
         </div>
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -28,34 +34,36 @@
     <div class="col-12">
       <!-- Custom Tabs -->
       <div class="card">
-        <div class="card-header d-flex p-0">
+        <div class="card-header d-flex p-0 bg-gray-light">
           <h3 class="card-title p-3">Your Competitions</h3>
-          <ul class="nav nav-pills ml-auto p-2">
-            <li class="nav-item"><a class="nav-link active" href="#tab_active" data-toggle="tab">Active</a></li>
-            <li class="nav-item"><a class="nav-link" href="#tab_closed" data-toggle="tab">Closed</a></li>
-            <li class="nav-item"><a class="nav-link" href="#tab_pinned" data-toggle="tab">Pinned</a></li>
-            <li class="nav-item"><a class="nav-link" href="#tab_hosted" data-toggle="tab">Hosted</a></li>
-          </ul>
         </div><!-- /.card-header -->
         <div class="card-body">
-          <div class="tab-content">
-            <div class="tab-pane active" id="tab_active">
-              WIP
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_closed">
-              WIP
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_pinned">
-              WIP
-            </div>
-            <div class="tab-pane" id="tab_hosted">
-              WIP
-            </div>
-            <!-- /.tab-pane -->
-          </div>
-          <!-- /.tab-content -->
+          <table id="table_private" class="ui celled table" style="width:100%">
+            <thead>
+            <tr>
+              <th>Index</th>
+              <th>Name</th>
+              <th>Opened date</th>
+              <th>Expired date</th>
+              <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for compete in competes %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}" class="stretched-link">{{ compete.friendly_name }}</a></td>
+                <td>{{ compete.created_date }}</td>
+                <td>{{ compete.deadline_date }}</td>
+                {% if compete.is_open %}
+                  <td><span class="badge bg-primary">active</span></td>
+                {% else %}
+                  <td><span class="badge bg-danger">close</span></td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
         </div><!-- /.card-body -->
       </div>
       <!-- ./card -->
@@ -67,25 +75,11 @@
     <div class="col-12">
       <!-- Custom Tabs -->
       <div class="card">
-        <div class="card-header d-flex p-0">
+        <div class="card-header d-flex p-0 bg-gray-light">
           <h3 class="card-title p-3">All Competitions</h3>
-          <ul class="nav nav-pills ml-auto p-2">
-            <li class="nav-item"><a class="nav-link active" href="#tab_active" data-toggle="tab">Active(Not Entered)</a></li>
-            <li class="nav-item"><a class="nav-link" href="#tab_closed" data-toggle="tab">Closed</a></li>
-          </ul>
         </div><!-- /.card-header -->
         <div class="card-body">
-          <div class="tab-content">
-            <div class="tab-pane active" id="tab_active">
-              WIP
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_closed">
-              WIP
-            </div>
-            <!-- /.tab-pane -->
-          </div>
-          <!-- /.tab-content -->
+
         </div><!-- /.card-body -->
       </div>
       <!-- ./card -->

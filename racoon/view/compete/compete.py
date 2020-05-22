@@ -13,8 +13,8 @@ from werkzeug.utils import secure_filename
 from racoon.lib.utils import clean_str
 from racoon.view.auth.utils import login_or_role_erquired
 from racoon.view.compete.froms import CreateCompetitionForm
-from racoon.models.competition import Competition
-from racoon.models.user import User
+from racoon.models.competition import Competition, CompetitionAttendee, CompetitionActivity
+from racoon.models.activity import GeneralActivity
 from racoon.extensions import db, storage
 
 
@@ -24,7 +24,9 @@ bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")
 @bp_compete.route("/")
 @login_or_role_erquired("member")
 def list():
-    return render_template("compete/list.html", user=current_user)
+    competes = Competition.query.all()
+    # TODO need to split comepetes into private and public....
+    return render_template("compete/list.html", competes=competes)
 
 
 @bp_compete.route("/create", methods=["GET", "POST"])
@@ -52,6 +54,15 @@ def create():
             )
             db.session.add(compete)
             db.session.commit()
+            # Add this user to attendee
+            __compete = Competition.query.filter(Competition.name == compete_name).first()
+            attendee = CompetitionAttendee(
+                user_id=current_user.id,
+                competition_id=__compete.id,
+                attended_date=datetime.datetime.now()
+            )
+            db.session.add(attendee)
+            db.session.commit()
             # Create bucket
             storage.connection.make_bucket(compete_name)
             # Data upload to bucket
@@ -65,6 +76,22 @@ def create():
                 length=sys.getsizeof(file_answer),
                 content_type="application/csv",
             )
+            # Add this event to CompetitionActivity
+            compete_activity = CompetitionActivity(
+                user_id=current_user.id,
+                competition_id=__compete.id,
+                content=f"Opened by {current_user.username}"
+            )
+            db.session.add(compete_activity)
+            db.session.commit()
+            # Add this event to GeneralActivity
+            general_activity = GeneralActivity(
+                date=datetime.datetime.now(),
+                content=f"opened new competition '{form.name.data}'.",
+                user_id=current_user.id
+            )
+            db.session.add(general_activity)
+            db.session.commit()
             return redirect(
                 url_for(
                     "bp_compete.overview", compete_name=compete_name, _external=True
@@ -108,7 +135,7 @@ def data_download(compete_name, filename):
     fileobj.seek(0)
     response = make_response(fileobj.read())
     response.headers.set('Content-Type', 'zip')
-    response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.basename(filename))
+    response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.splitext(os.path.basename(filename))[0])
     return response
 
 

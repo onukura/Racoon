@@ -25,6 +25,7 @@ bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")
 @login_or_role_erquired("member")
 def list():
     competes = Competition.query.all()
+    # TODO need to split comepetes into private and public....
     return render_template("compete/list.html", competes=competes)
 
 

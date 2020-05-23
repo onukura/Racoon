@@ -17,6 +17,15 @@ class Competition(db.Model):
     deadline_date = db.Column(db.DateTime, nullable=True)
     is_open = db.Column(db.Boolean, default=True, nullable=False)
 
+    def is_user_joined(self, user_id):
+        res = CompetitionAttendee.query. \
+            filter(CompetitionAttendee.competition_id == self.id). \
+            filter(CompetitionAttendee.user_id == user_id). \
+            first()
+        if res:
+            return True
+        return False
+
 
 class CompetitionAttendee(db.Model):
     __tablename__ = "competition_attendee"

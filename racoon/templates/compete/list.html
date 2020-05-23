@@ -52,7 +52,7 @@
             {% for compete in competes %}
               <tr>
                 <td>{{ loop.index }}</td>
-                <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}" class="stretched-link">{{ compete.friendly_name }}</a></td>
+                <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}"><strong>{{ compete.friendly_name }}</strong></a></td>
                 <td>{{ compete.created_date }}</td>
                 <td>{{ compete.deadline_date }}</td>
                 {% if compete.is_open %}

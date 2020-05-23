@@ -107,8 +107,9 @@ def create():
 @login_or_role_erquired("member")
 def overview(compete_name):
     compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
     if compete:
-        return render_template("compete/overview.html", compete=compete)
+        return render_template("compete/overview.html", compete=compete, is_joined=is_joined, message=None)
     return redirect(url_for("bp_compete.list", _external=True))
 
 
@@ -157,6 +158,24 @@ def notebook(compete_name):
 @login_or_role_erquired("member")
 def leaderboard(compete_name):
     return redirect(request.url)
+
+
+@bp_compete.route("/<string:compete_name>/join")
+@login_or_role_erquired("member")
+def join(compete_name):
+    compete = Competition.query.filter(Competition.name == compete_name).first()
+    attendee = CompetitionAttendee(
+        user_id=current_user.id,
+        competition_id=compete.id,
+        attended_date=datetime.datetime.now()
+    )
+    db.session.add(attendee)
+    db.session.commit()
+    message = "You have successfully joined competition!"
+    return render_template("compete/overview.html",
+                           compete=compete,
+                           is_joined=True,
+                           message=message)
 
 
 @bp_compete.route("/<string:compete_name>/mysubmission")

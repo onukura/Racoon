@@ -19,10 +19,13 @@ class Competition(db.Model):
     is_open = db.Column(db.Boolean, default=True, nullable=False)
 
     def is_user_joined(self, user_id):
-        res = CompetitionAttendee.query. \
-            filter(CompetitionAttendee.competition_id == self.id). \
-            filter(CompetitionAttendee.user_id == user_id). \
-            first()
+        res = (
+            CompetitionAttendee.query.filter(
+                CompetitionAttendee.competition_id == self.id
+            )
+            .filter(CompetitionAttendee.user_id == user_id)
+            .first()
+        )
         if res:
             return True
         return False

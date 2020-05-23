@@ -10,14 +10,13 @@ $("#description_data").keyup(function() {
 });
 
 var type_list = [
-    {type: "regression", val:"mae", txt:"Mean Absolute Error"},
-    {type: "regression", val:"mse", txt:"Mean Squared Error"},
-    {type: "regression", val:"msle", txt:"Mean Squared Logarithmic Error"},
-    {type: "regression", val:"rmse", txt:"Root Mean Squared Error"},
-    {type: "classification", val:"accuracy", txt:"Accuracy"},
-    {type: "classification", val:"auc", txt:"Area Under Curve(AUC)"},
-    {type: "classification", val:"f1", txt:"F1 Score"},
-    {type: "classification", val:"logloss", txt:"Log Loss"},
+    {type: "regression", val:"score_mae", txt:"Mean Absolute Error"},
+    {type: "regression", val:"score_mse", txt:"Mean Squared Error"},
+    {type: "regression", val:"score_msle", txt:"Mean Squared Logarithmic Error"},
+    {type: "regression", val:"score_rmse", txt:"Root Mean Squared Error"},
+    {type: "classification", val:"score_accuracy", txt:"Accuracy"},
+    {type: "classification", val:"score_auc", txt:"Area Under Curve(AUC)"},
+    {type: "classification", val:"score_f1", txt:"F1 Score"},
 ];
 
 function createSelectBox() {

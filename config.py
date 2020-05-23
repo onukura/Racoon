@@ -17,15 +17,16 @@ class BaseConfig:
     WTF_CSRF_SECRET_KEY = "sdpg2398hswefwnjoj"
     # Storage
     STORAGE_TYPE = "minio"  # minio or filesystem
+    STORAGE_UPLOAD_PATH = "upload"
+    STORAGE_SUBMISSION_PATH = "submission"
     # MINIO (if STORAGE_TYPE == "minio")
     MINIO_ENDPOINT = "minio:9000"
     MINIO_ACCESS_KEY = "minio"
     MINIO_SECRET_KEY = "minio123"
     MINIO_SECURE = False
-    MINIO_UPLOAD_DATA_PATH = "upload"
     # File System (if STORAGE_TYPE == "filesystem")
-    STORAGE_DIR = "/data"
-    UPLOAD_DATA_PATH = "upload"  # path will be /data/{compete_name}/upload
+    STORAGE_FD_DIR = "/data"
+    # UPLOAD_DATA_PATH = "upload"  # path will be /data/{compete_name}/upload
 
 
 class DebugConfig(BaseConfig):

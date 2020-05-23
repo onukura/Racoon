@@ -1,9 +1,6 @@
-"""This file is the view module which contains the lazysensor, where all the good
-stuff happens. You will always want to point your applications like Gunicorn
-to this file, which will pick up the lazysensor to run their servers.
-"""
-
+# -*- coding: utf-8 -*-
 import os
+
 from flask_script import Manager
 from flask_migrate import MigrateCommand
 

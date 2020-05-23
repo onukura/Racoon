@@ -33,14 +33,14 @@ class CreateCompetitionForm(FlaskForm):
         render_kw={"class": "form-control", "placeholder": "Description for data"},
         widget=TextArea(),
     )
-    eval_type = RadioField(
+    metric_type = RadioField(
         "compete_eval_type",
         validators=[DataRequired()],
         choices=[("regression", "Regression"), ("classification", "Classification")],
         default="regression",
         render_kw={"class": "form-check"},
     )
-    metric = SelectField(
+    metric_name = SelectField(
         "compete_metric", render_kw={"class": "form-control", "id": "metric"},
     )
     file_answer = FileField(
@@ -61,4 +61,19 @@ class CreateCompetitionForm(FlaskForm):
         "access_level",
         choices=[("1", "Public"), ("2", "Group"), ("3", "Private")],
         render_kw={"class": "form-control", "id": "access_level"},
+    )
+
+
+class SubmissionForm(FlaskForm):
+    description = StringField(
+        "description_submission",
+        render_kw={"class": "form-control", "placeholder": "Description for overview"},
+        widget=TextArea(),
+    )
+    file_prediction = FileField(
+        validators=[
+            FileRequired(),
+            FileAllowed(ALLOWED_ANSWER_EXT, "csv&tsv&txt only!"),
+        ],
+        render_kw={"class": "custom-file-input"},
     )

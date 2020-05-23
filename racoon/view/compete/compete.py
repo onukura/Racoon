@@ -1,21 +1,36 @@
 # -*- coding: utf-8 -*-
-import sys
 import datetime
-import time
-import os
 import io
+import os
+import sys
+import time
 import zipfile
 
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, make_response
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    current_app,
+    make_response,
+)
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 
-from racoon.lib.utils import clean_str
-from racoon.view.auth.utils import login_or_role_erquired
-from racoon.view.compete.froms import CreateCompetitionForm
-from racoon.models.competition import Competition, CompetitionAttendee, CompetitionActivity
-from racoon.models.activity import GeneralActivity
 from racoon.extensions import db, storage
+from racoon.lib.utils import clean_str
+from racoon.lib.evals import metrics
+from racoon.models.activity import GeneralActivity
+from racoon.models.competition import (
+    Competition,
+    CompetitionAttendee,
+    CompetitionActivity,
+    CompetitionSubmission,
+    CompetitionScore,
+)
+from racoon.view.auth.utils import login_or_role_erquired
+from racoon.view.compete.froms import CreateCompetitionForm, SubmissionForm
 
 
 bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")
@@ -25,8 +40,19 @@ bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")
 @login_or_role_erquired("member")
 def list():
     competes = Competition.query.all()
-    # TODO need to split comepetes into private and public....
-    return render_template("compete/list.html", competes=competes)
+    competes_private = []
+    competes_public = []
+    [
+        competes_private.append(c)
+        if c.is_user_joined(current_user.id)
+        else competes_public.append(c)
+        for c in competes
+    ]
+    return render_template(
+        "compete/list.html",
+        competes_private=competes_private,
+        competes_public=competes_public,
+    )
 
 
 @bp_compete.route("/create", methods=["GET", "POST"])
@@ -46,6 +72,8 @@ def create():
                 description_overview=form.description_overview.data,
                 description_eval=form.description_eval.data,
                 description_data=form.description_data.data,
+                metric_type=form.metric_type.data,
+                metric_name=form.metric_name.data,
                 creator_id=current_user.id,
                 access_level=int(form.access_level.data),
                 created_date=datetime.datetime.now(),
@@ -55,11 +83,13 @@ def create():
             db.session.add(compete)
             db.session.commit()
             # Add this user to attendee
-            __compete = Competition.query.filter(Competition.name == compete_name).first()
+            __compete = Competition.query.filter(
+                Competition.name == compete_name
+            ).first()
             attendee = CompetitionAttendee(
                 user_id=current_user.id,
                 competition_id=__compete.id,
-                attended_date=datetime.datetime.now()
+                attended_date=datetime.datetime.now(),
             )
             db.session.add(attendee)
             db.session.commit()
@@ -68,7 +98,7 @@ def create():
             # Data upload to bucket
             file_answer = form.file_answer.data
             filename = secure_filename(file_answer.filename)
-            upload_dir = current_app.config["MINIO_UPLOAD_DATA_PATH"]
+            upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
             storage.connection.put_object(
                 compete_name,
                 f"{upload_dir}/{filename}",
@@ -80,7 +110,7 @@ def create():
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,
                 competition_id=__compete.id,
-                content=f"Opened by {current_user.username}"
+                content=f"Opened by {current_user.username}",
             )
             db.session.add(compete_activity)
             db.session.commit()
@@ -88,7 +118,7 @@ def create():
             general_activity = GeneralActivity(
                 date=datetime.datetime.now(),
                 content=f"opened new competition '{form.name.data}'.",
-                user_id=current_user.id
+                user_id=current_user.id,
             )
             db.session.add(general_activity)
             db.session.commit()
@@ -105,37 +135,54 @@ def create():
 @login_or_role_erquired("member")
 def overview(compete_name):
     compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
     if compete:
-        return render_template("compete/overview.html", compete=compete)
+        return render_template(
+            "compete/overview.html", compete=compete, is_joined=is_joined
+        )
     return redirect(url_for("bp_compete.list", _external=True))
 
 
 @bp_compete.route("/<string:compete_name>/data")
 @login_or_role_erquired("member")
 def data(compete_name):
-    upload_dir = current_app.config["MINIO_UPLOAD_DATA_PATH"]
+    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
     compete = Competition.query.filter(Competition.name == compete_name).first()
-    data_list = storage.connection.list_objects_v2(compete_name, recursive=True, start_after=upload_dir)
-    data_dict = [{"name": os.path.basename(i.object_name), "size": round(i.size / 1024, ndigits=2)} for i in data_list]
+    data_list = storage.connection.list_objects_v2(
+        compete_name, recursive=True, start_after=upload_dir
+    )
+    data_dict = [
+        {
+            "name": os.path.basename(i.object_name),
+            "size": round(i.size / 1024, ndigits=2),
+        }
+        for i in data_list
+    ]
     if compete:
-        return render_template("compete/data.html", compete=compete, data_dict=data_dict)
+        return render_template(
+            "compete/data.html", compete=compete, data_dict=data_dict
+        )
 
 
 @bp_compete.route("/<string:compete_name>/data/download/<string:filename>")
 @login_or_role_erquired("member")
 def data_download(compete_name, filename):
-    upload_dir = current_app.config["MINIO_UPLOAD_DATA_PATH"]
+    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
     file = storage.connection.get_object(compete_name, f"{upload_dir}/{filename}")
     fileobj = io.BytesIO()
-    with zipfile.ZipFile(fileobj, 'w') as zip_file:
+    with zipfile.ZipFile(fileobj, "w") as zip_file:
         zip_info = zipfile.ZipInfo(filename)
         zip_info.date_time = time.localtime(time.time())[:6]
         zip_info.compress_type = zipfile.ZIP_DEFLATED
         zip_file.writestr(zip_info, file.data)
     fileobj.seek(0)
     response = make_response(fileobj.read())
-    response.headers.set('Content-Type', 'zip')
-    response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.splitext(os.path.basename(filename))[0])
+    response.headers.set("Content-Type", "zip")
+    response.headers.set(
+        "Content-Disposition",
+        "attachment",
+        filename="%s.zip" % os.path.splitext(os.path.basename(filename))[0],
+    )
     return response
 
 
@@ -157,6 +204,20 @@ def leaderboard(compete_name):
     return redirect(request.url)
 
 
+@bp_compete.route("/<string:compete_name>/join")
+@login_or_role_erquired("member")
+def join(compete_name):
+    compete = Competition.query.filter(Competition.name == compete_name).first()
+    attendee = CompetitionAttendee(
+        user_id=current_user.id,
+        competition_id=compete.id,
+        attended_date=datetime.datetime.now(),
+    )
+    db.session.add(attendee)
+    db.session.commit()
+    return redirect(url_for("bp_compete.overview", compete_name=compete_name))
+
+
 @bp_compete.route("/<string:compete_name>/mysubmission")
 @login_or_role_erquired("member")
 def mysubmission(compete_name):
@@ -164,8 +225,43 @@ def mysubmission(compete_name):
     return redirect(request.url)
 
 
-@bp_compete.route("/<string:compete_name>/submission")
+@bp_compete.route("/<string:compete_name>/submission", methods=["GET", "POST"])
 @login_or_role_erquired("member")
 def submission(compete_name):
-    print(compete_name)
-    return redirect(request.url)
+    compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
+    form = SubmissionForm()
+    if request.method == "GET":
+        return render_template(
+            "compete/submission.html", compete=compete, form=form, is_joined=is_joined
+        )
+    elif request.method == "POST":
+        if form.validate_on_submit():
+            # save uploaded file to storage
+            file_answer = form.file_prediction.data
+            filename = secure_filename(file_answer.filename)
+            upload_dir = current_app.config["STORAGE_SUBMISSION_PATH"]
+            storage.connection.put_object(
+                compete_name,
+                f"{upload_dir}/{current_user.id}/{filename}",
+                file_answer,
+                length=sys.getsizeof(file_answer),
+                content_type="application/csv",
+            )
+            # register submission to submission table
+            submit = CompetitionSubmission(
+                user_id=current_user.id,
+                competition_id=compete.id,
+                submit_date=datetime.datetime.now(),
+                file_name=filename,
+                description=form.description,
+            )
+            db.session.add(submit)
+            # load metric
+            metric_func = metrics.get(compete.metric_type).get(compete.metric_name)
+            # load answer file
+            # calculate metric
+            # register metric to score table
+            # redirect to leaderboard
+            pass
+    return redirect(url_for("bp_compete.overview", compete_name=compete_name))

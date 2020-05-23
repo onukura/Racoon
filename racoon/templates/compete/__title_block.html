@@ -10,7 +10,7 @@
         <div class="col-sm-8">
           <ul class="nav justify-content-start">
             <li class="nav-item">
-              <a class="nav-link active" href="#">Overview</a>
+              <a class="nav-link" href="{{ url_for('bp_compete.overview', compete_name=compete.name, _external=True) }}">Overview</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('bp_compete.data', compete_name=compete.name, _external=True) }}">Data</a>
@@ -28,12 +28,18 @@
         </div>
         <div class="col-sm-4">
           <ul class="nav justify-content-end">
+            {% if is_joined %}
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('bp_compete.mysubmission', compete_name=compete.name, _external=True) }}">My Submisisons</a>
             </li>
             <li class="nav-item">
               <a class="nav-link bg-primary" href="{{ url_for('bp_compete.submission', compete_name=compete.name, _external=True) }}">Submit Predictions</a>
             </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link bg-primary" href="{{ url_for('bp_compete.join', compete_name=compete.name, _external=True) }}">Join Competition</a>
+            </li>
+            {% endif %}
           </ul>
         </div>
 

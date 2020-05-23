@@ -38,32 +38,36 @@
           <h3 class="card-title p-3">Your Competitions</h3>
         </div><!-- /.card-header -->
         <div class="card-body">
-          <table id="table_private" class="ui celled table" style="width:100%">
-            <thead>
-            <tr>
-              <th>Index</th>
-              <th>Name</th>
-              <th>Opened date</th>
-              <th>Expired date</th>
-              <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for compete in competes %}
+          {% if competes_private|length > 0 %}
+            <table id="table_private" class="ui celled table" style="width:100%">
+              <thead>
               <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}" class="stretched-link">{{ compete.friendly_name }}</a></td>
-                <td>{{ compete.created_date }}</td>
-                <td>{{ compete.deadline_date }}</td>
-                {% if compete.is_open %}
-                  <td><span class="badge bg-primary">active</span></td>
-                {% else %}
-                  <td><span class="badge bg-danger">close</span></td>
-                {% endif %}
+                <th>Index</th>
+                <th>Name</th>
+                <th>Opened date</th>
+                <th>Expired date</th>
+                <th>Status</th>
               </tr>
-            {% endfor %}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+              {% for compete in competes_private %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}"><strong>{{ compete.friendly_name }}</strong></a></td>
+                  <td>{{ compete.created_date }}</td>
+                  <td>{{ compete.deadline_date }}</td>
+                  {% if compete.is_open %}
+                    <td><span class="badge bg-primary">active</span></td>
+                  {% else %}
+                    <td><span class="badge bg-danger">close</span></td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            You have not joined competition yet.
+          {% endif %}
         </div><!-- /.card-body -->
       </div>
       <!-- ./card -->
@@ -79,7 +83,36 @@
           <h3 class="card-title p-3">All Competitions</h3>
         </div><!-- /.card-header -->
         <div class="card-body">
-
+          {% if competes_public|length > 0 %}
+            <table id="table_public" class="ui celled table" style="width:100%">
+              <thead>
+              <tr>
+                <th>Index</th>
+                <th>Name</th>
+                <th>Opened date</th>
+                <th>Expired date</th>
+                <th>Status</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for compete in competes_public %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td><a href="{{ url_for("bp_compete.overview", compete_name=compete.name) }}"><strong>{{ compete.friendly_name }}</strong></a></td>
+                  <td>{{ compete.created_date }}</td>
+                  <td>{{ compete.deadline_date }}</td>
+                  {% if compete.is_open %}
+                    <td><span class="badge bg-primary">active</span></td>
+                  {% else %}
+                    <td><span class="badge bg-danger">close</span></td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            No competitions available.
+          {% endif %}
         </div><!-- /.card-body -->
       </div>
       <!-- ./card -->

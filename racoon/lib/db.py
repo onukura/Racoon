@@ -1,1 +1,1 @@
-from racoon.extensions import db
+# -*- coding: utf-8 -*-

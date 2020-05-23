@@ -1,7 +1,8 @@
-from racoon.view.home import bp_home
-from racoon.view.error import bp_error
+# -*- coding: utf-8 -*-
 from racoon.view.auth.auth import bp_auth
 from racoon.view.compete.compete import bp_compete
+from racoon.view.error import bp_error
+from racoon.view.home import bp_home
 
 
 views = {

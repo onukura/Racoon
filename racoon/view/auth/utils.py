@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
+
 from flask import request, current_app, redirect, url_for
 from flask_login import current_user
 

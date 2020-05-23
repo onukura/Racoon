@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from racoon.models.user import User, Roles, UserGroup, UsersRoles
 from racoon.models.competition import (
     Competition,

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from flask import Blueprint, render_template
 from sqlalchemy import desc
 
 from racoon.extensions import db
-from racoon.models.user import User
 from racoon.models.activity import GeneralActivity
+from racoon.models.user import User
 
 
 bp_home = Blueprint("bp_home", __name__)

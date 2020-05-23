@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error

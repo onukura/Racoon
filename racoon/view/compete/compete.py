@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-import sys
 import datetime
-import time
-import os
 import io
+import os
+import sys
+import time
 import zipfile
 
 from flask import Blueprint, render_template, request, redirect, url_for, current_app, make_response
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 
+from racoon.extensions import db, storage
 from racoon.lib.utils import clean_str
+from racoon.models.activity import GeneralActivity
+from racoon.models.competition import Competition, CompetitionAttendee, CompetitionActivity
 from racoon.view.auth.utils import login_or_role_erquired
 from racoon.view.compete.froms import CreateCompetitionForm
-from racoon.models.competition import Competition, CompetitionAttendee, CompetitionActivity
-from racoon.models.activity import GeneralActivity
-from racoon.extensions import db, storage
 
 
 bp_compete = Blueprint("bp_compete", __name__, url_prefix="/compete")

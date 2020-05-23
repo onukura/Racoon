@@ -10,7 +10,7 @@
         <div class="col-sm-8">
           <ul class="nav justify-content-start">
             <li class="nav-item">
-              <a class="nav-link active" href="#">Overview</a>
+              <a class="nav-link" href="{{ url_for('bp_compete.overview', compete_name=compete.name, _external=True) }}">Overview</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('bp_compete.data', compete_name=compete.name, _external=True) }}">Data</a>

@@ -34,14 +34,14 @@ class CreateCompetitionForm(FlaskForm):
         widget=TextArea(),
     )
     metric_type = RadioField(
-        "compete_eval_type",
+        "compete_metric_type",
         validators=[DataRequired()],
         choices=[("regression", "Regression"), ("classification", "Classification")],
         default="regression",
         render_kw={"class": "form-check"},
     )
     metric_name = SelectField(
-        "compete_metric", render_kw={"class": "form-control", "id": "metric"},
+        "compete_metric_name", render_kw={"class": "form-control", "id": "metric_name"},
     )
     file_answer = FileField(
         validators=[

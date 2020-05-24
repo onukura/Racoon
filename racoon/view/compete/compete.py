@@ -5,7 +5,9 @@ import os
 import sys
 import time
 import zipfile
+from io import StringIO
 
+import pandas as pd
 from flask import (
     Blueprint,
     render_template,
@@ -62,7 +64,7 @@ def create():
     if request.method == "GET":
         return render_template("compete/create.html", form=form)
     else:
-        form.metric.choices = [(form.metric.data, form.metric.data)]
+        form.metric_name.choices = [(form.metric_name.data, form.metric_name.data)]
         if form.validate_on_submit():
             compete_name = clean_str(form.name.data)
             # Add competition record to db
@@ -95,17 +97,29 @@ def create():
             db.session.commit()
             # Create bucket
             storage.connection.make_bucket(compete_name)
-            # Data upload to bucket
+            # Answer data upload to bucket
             file_answer = form.file_answer.data
-            filename = secure_filename(file_answer.filename)
-            upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+            filename_answer = current_app.config["FILENAME_ANSWER"] # secure_filename(file_answer.filename)
+            upload_dir_answer = current_app.config["STORAGE_PATH_ANSWER"]
             storage.connection.put_object(
                 compete_name,
-                f"{upload_dir}/{filename}",
+                f"{upload_dir_answer}/{filename_answer}",
                 file_answer,
                 length=sys.getsizeof(file_answer),
                 content_type="application/csv",
             )
+            # Etc data upload to bucket
+            if form.file_data.data is not None:
+                file_data = form.file_data.data
+                filename_data = secure_filename(file_data.filename)
+                upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
+                storage.connection.put_object(
+                    compete_name,
+                    f"{upload_dir_data}/{filename_data}",
+                    file_data,
+                    length=sys.getsizeof(file_data),
+                    content_type="application/csv",
+                )
             # Add this event to CompetitionActivity
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,
@@ -146,7 +160,7 @@ def overview(compete_name):
 @bp_compete.route("/<string:compete_name>/data")
 @login_or_role_erquired("member")
 def data(compete_name):
-    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+    upload_dir = current_app.config["STORAGE_PATH_DATA"]
     compete = Competition.query.filter(Competition.name == compete_name).first()
     data_list = storage.connection.list_objects_v2(
         compete_name, recursive=True, start_after=upload_dir
@@ -167,7 +181,7 @@ def data(compete_name):
 @bp_compete.route("/<string:compete_name>/data/download/<string:filename>")
 @login_or_role_erquired("member")
 def data_download(compete_name, filename):
-    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+    upload_dir = current_app.config["STORAGE_PATH_DATA"]
     file = storage.connection.get_object(compete_name, f"{upload_dir}/{filename}")
     fileobj = io.BytesIO()
     with zipfile.ZipFile(fileobj, "w") as zip_file:
@@ -238,16 +252,17 @@ def submission(compete_name):
     elif request.method == "POST":
         if form.validate_on_submit():
             # save uploaded file to storage
-            file_answer = form.file_prediction.data
-            filename = secure_filename(file_answer.filename)
-            upload_dir = current_app.config["STORAGE_SUBMISSION_PATH"]
+            file_submit = form.file_prediction.data
+            filename = secure_filename(file_submit.filename)
+            upload_dir = current_app.config["STORAGE_PATH_SUBMISSION"]
             storage.connection.put_object(
                 compete_name,
                 f"{upload_dir}/{current_user.id}/{filename}",
-                file_answer,
-                length=sys.getsizeof(file_answer),
+                file_submit,
+                length=sys.getsizeof(file_submit),
                 content_type="application/csv",
             )
+            del file_submit
             # register submission to submission table
             submit = CompetitionSubmission(
                 user_id=current_user.id,
@@ -258,9 +273,16 @@ def submission(compete_name):
             )
             db.session.add(submit)
             # load metric
-            metric_func = metrics.get(compete.metric_type).get(compete.metric_name)
-            # load answer file
+            metric_func = getattr(metrics.get(compete.metric_type), compete.metric_name)
+            # load files
+            answer_dir = current_app.config["STORAGE_PATH_ANSWER"]
+            filename_answer = current_app.config["FILENAME_ANSWER"]
+            file_answer = storage.connection.get_object(bucket_name=compete_name, object_name=f"{answer_dir}/{filename_answer}")
+            file_submit = storage.connection.get_object(bucket_name=compete_name,
+                                                         object_name=f"{upload_dir}/{current_user.id}/{filename}")
             # calculate metric
+            df_answer = pd.read_csv(file_answer)
+            df_submit = pd.read_csv(file_submit)
             # register metric to score table
             # redirect to leaderboard
             pass

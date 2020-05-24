@@ -9,6 +9,7 @@ $("#description_data").keyup(function() {
     $('#marked-preview-data').html(DOMPurify.sanitize(marked($(this).val())));
 });
 
+// This "type" and "val" must match with python functions in "racoon/lib/evals/__init__.py"
 var type_list = [
     {type: "regression", val:"score_mae", txt:"Mean Absolute Error"},
     {type: "regression", val:"score_mse", txt:"Mean Squared Error"},
@@ -20,11 +21,11 @@ var type_list = [
 ];
 
 function createSelectBox() {
-    var compete_type = $('input:radio[name="eval_type"]:checked').val();
-    $("#metric").children().remove();
+    var compete_type = $('input:radio[name="metric_type"]:checked').val();
+    $("#metric_name").children().remove();
     for(var i=0;i<type_list.length;i++){
         if (compete_type === type_list[i].type) {
-            $('#metric').append($('<option>').attr({ value: type_list[i].val, name: "metric" }).text(type_list[i].txt));
+            $('#metric_name').append($('<option>').attr({ value: type_list[i].val, name: "metric_name" }).text(type_list[i].txt));
         }
     }
 }

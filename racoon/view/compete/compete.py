@@ -110,16 +110,17 @@ def create():
             )
             # Etc data upload to bucket
             if form.file_data.data is not None:
-                file_data = form.file_data.data
-                filename_data = secure_filename(file_data.filename)
-                upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
-                storage.connection.put_object(
-                    compete_name,
-                    f"{upload_dir_data}/{filename_data}",
-                    file_data,
-                    length=sys.getsizeof(file_data),
-                    content_type="application/csv",
-                )
+                # etc. data is multiple file input
+                for _file_data in form.file_data.data:
+                    _filename_data = secure_filename(_file_data.filename)
+                    upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
+                    storage.connection.put_object(
+                        compete_name,
+                        f"{upload_dir_data}/{_filename_data}",
+                        _file_data,
+                        length=sys.getsizeof(_file_data),
+                        content_type="application/csv",
+                    )
             # Add this event to CompetitionActivity
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,

@@ -1,3 +1,8 @@
+// bs-custom-file-input
+$(function () {
+    bsCustomFileInput.init()
+})
+
 // Markdown to HTML
 $("#description_overview").keyup(function() {
     $('#marked-preview-overview').html(DOMPurify.sanitize(marked($(this).val())));

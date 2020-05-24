@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from wtforms import MultipleFileField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, SelectField, RadioField, DateField
@@ -50,7 +51,7 @@ class CreateCompetitionForm(FlaskForm):
         ],
         render_kw={"class": "custom-file-input"},
     )
-    file_data = FileField(render_kw={"class": "custom-file-input"})
+    file_data = MultipleFileField(render_kw={"class": "custom-file-input", "multiple": True})
     expired_date = DateField(
         "expired_date",
         format="%Y-%m-%d",

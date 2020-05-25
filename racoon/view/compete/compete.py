@@ -5,7 +5,6 @@ import os
 import sys
 import time
 import zipfile
-from io import BytesIO
 
 import pandas as pd
 from flask import (
@@ -19,10 +18,13 @@ from flask import (
 )
 from flask_login import current_user
 from werkzeug.utils import secure_filename
+from sqlalchemy import desc
 
 from racoon.extensions import db, storage
 from racoon.lib.utils import clean_str
 from racoon.lib.evals import Metric
+from racoon.lib.db import create_general_query
+from racoon.models.user import User
 from racoon.models.activity import GeneralActivity
 from racoon.models.competition import (
     Competition,
@@ -115,15 +117,16 @@ def create():
             if form.file_data.data is not None:
                 # etc. data is multiple file input
                 for _file_data in form.file_data.data:
-                    _filename_data = secure_filename(_file_data.filename)
-                    upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
-                    storage.connection.put_object(
-                        compete_name,
-                        f"{upload_dir_data}/{_filename_data}",
-                        _file_data,
-                        length=sys.getsizeof(_file_data),
-                        content_type="application/csv",
-                    )
+                    if _file_data.content_length > 0:
+                        _filename_data = secure_filename(_file_data.filename)
+                        upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
+                        storage.connection.put_object(
+                            compete_name,
+                            f"{upload_dir_data}/{_filename_data}",
+                            _file_data,
+                            length=sys.getsizeof(_file_data),
+                            content_type="application/csv",
+                        )
             # Add this event to CompetitionActivity
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,
@@ -220,7 +223,21 @@ def notebook(compete_name):
 @login_or_role_erquired("member")
 def leaderboard(compete_name):
     compete = Competition.query.filter(Competition.name == compete_name).first()
-    return redirect(request.url)
+    is_joined = compete.is_user_joined(current_user.id)
+    scores_query_obj = db.session \
+        .query(CompetitionScore, CompetitionSubmission, User) \
+        .join(CompetitionSubmission, CompetitionScore.submission_id == CompetitionSubmission.id) \
+        .join(User, CompetitionScore.user_id == User.id) \
+        .filter(CompetitionScore.competition_id == compete.id) \
+        .order_by(CompetitionScore.score)
+    _df_scores = pd.read_sql(create_general_query(scores_query_obj), db.engine)
+    user_count = _df_scores[["username", "score"]].groupby("username").count().rename(columns={'score':'count'})
+    max_scores = _df_scores[["username", "score"]].groupby("username").max()
+    last_dates = _df_scores[["username", "submit_date"]].groupby("username").max().rename(columns={'submit_date':'last'})
+    df_scores = user_count.merge(max_scores, on="username").merge(last_dates, on="username")
+    df_scores.reset_index(inplace=True)
+    scores_list = df_scores.to_dict(orient="row")
+    return render_template("compete/leaderboard.html", compete=compete, is_joined=is_joined, scores_list=scores_list)
 
 
 @bp_compete.route("/<string:compete_name>/join")
@@ -314,5 +331,5 @@ def submission(compete_name):
             )
             db.session.add(score)
             db.session.commit()
-            redirect(url_for("bp_compete.leaderboard", compete_name=compete_name))
+            return redirect(url_for("bp_compete.leaderboard", compete_name=compete_name))
     return redirect(url_for("bp_compete.overview", compete_name=compete_name))

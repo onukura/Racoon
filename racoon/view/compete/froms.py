@@ -51,7 +51,9 @@ class CreateCompetitionForm(FlaskForm):
         ],
         render_kw={"class": "custom-file-input"},
     )
-    file_data = MultipleFileField(render_kw={"class": "custom-file-input", "multiple": True})
+    file_data = MultipleFileField(
+        render_kw={"class": "custom-file-input", "multiple": True}
+    )
     expired_date = DateField(
         "expired_date",
         format="%Y-%m-%d",

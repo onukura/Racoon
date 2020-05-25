@@ -99,7 +99,9 @@ def create():
             storage.connection.make_bucket(compete_name)
             # Answer data upload to bucket
             file_answer = form.file_answer.data
-            filename_answer = current_app.config["FILENAME_ANSWER"] # secure_filename(file_answer.filename)
+            filename_answer = current_app.config[
+                "FILENAME_ANSWER"
+            ]  # secure_filename(file_answer.filename)
             upload_dir_answer = current_app.config["STORAGE_PATH_ANSWER"]
             storage.connection.put_object(
                 compete_name,
@@ -278,9 +280,13 @@ def submission(compete_name):
             # load files
             answer_dir = current_app.config["STORAGE_PATH_ANSWER"]
             filename_answer = current_app.config["FILENAME_ANSWER"]
-            file_answer = storage.connection.get_object(bucket_name=compete_name, object_name=f"{answer_dir}/{filename_answer}")
-            file_submit = storage.connection.get_object(bucket_name=compete_name,
-                                                         object_name=f"{upload_dir}/{current_user.id}/{filename}")
+            file_answer = storage.connection.get_object(
+                bucket_name=compete_name, object_name=f"{answer_dir}/{filename_answer}"
+            )
+            file_submit = storage.connection.get_object(
+                bucket_name=compete_name,
+                object_name=f"{upload_dir}/{current_user.id}/{filename}",
+            )
             # calculate metric
             df_answer = pd.read_csv(file_answer)
             df_submit = pd.read_csv(file_submit)

@@ -29,7 +29,7 @@ class BaseConfig:
     # File System (if STORAGE_TYPE == "filesystem")
     STORAGE_FD_DIR = "storage"
     # Storage directory setting
-    STORAGE_PATH_ANSWER = "answer"   # path will be {bucket name}:/{STORAGE_PATH_ANSWER} or ./storage/{STORAGE_PATH_ANSWER}
+    STORAGE_PATH_ANSWER = "answer"  # path will be {bucket name}:/{STORAGE_PATH_ANSWER} or ./storage/{STORAGE_PATH_ANSWER}
     STORAGE_PATH_DATA = "data"  # path will be /{STORAGE_PATH_DATA}
     STORAGE_PATH_SUBMISSION = "submission"  # path will be /{STORAGE_PATH_SUBMISSION}
 

@@ -50,7 +50,6 @@ class CompetitionScore(db.Model):
     competition_id = db.Column(db.Integer, db.ForeignKey("competition.id"))
     submission_id = db.Column(db.Integer, db.ForeignKey("competition_submission.id"))
     score = db.Column(db.Numeric, nullable=True)
-    posted_date = db.Column(db.DateTime, default=datetime.datetime.now())
 
 
 class CompetitionSubmission(db.Model):

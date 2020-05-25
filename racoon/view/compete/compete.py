@@ -5,7 +5,7 @@ import os
 import sys
 import time
 import zipfile
-from io import StringIO
+from io import BytesIO
 
 import pandas as pd
 from flask import (
@@ -22,7 +22,7 @@ from werkzeug.utils import secure_filename
 
 from racoon.extensions import db, storage
 from racoon.lib.utils import clean_str
-from racoon.lib.evals import metrics
+from racoon.lib.evals import Metric
 from racoon.models.activity import GeneralActivity
 from racoon.models.competition import (
     Competition,
@@ -98,6 +98,7 @@ def create():
             # Create bucket
             storage.connection.make_bucket(compete_name)
             # Answer data upload to bucket
+            # TODO last row of csv is strangely empty.
             file_answer = form.file_answer.data
             filename_answer = current_app.config[
                 "FILENAME_ANSWER"
@@ -218,6 +219,7 @@ def notebook(compete_name):
 @bp_compete.route("/<string:compete_name>/leaderboard")
 @login_or_role_erquired("member")
 def leaderboard(compete_name):
+    compete = Competition.query.filter(Competition.name == compete_name).first()
     return redirect(request.url)
 
 
@@ -267,16 +269,16 @@ def submission(compete_name):
             )
             del file_submit
             # register submission to submission table
+            submit_date = datetime.datetime.now()
             submit = CompetitionSubmission(
                 user_id=current_user.id,
                 competition_id=compete.id,
-                submit_date=datetime.datetime.now(),
+                submit_date=submit_date,
                 file_name=filename,
-                description=form.description,
+                description=form.description.data,
             )
             db.session.add(submit)
-            # load metric
-            metric_func = getattr(metrics.get(compete.metric_type), compete.metric_name)
+            db.session.commit()
             # load files
             answer_dir = current_app.config["STORAGE_PATH_ANSWER"]
             filename_answer = current_app.config["FILENAME_ANSWER"]
@@ -288,9 +290,29 @@ def submission(compete_name):
                 object_name=f"{upload_dir}/{current_user.id}/{filename}",
             )
             # calculate metric
-            df_answer = pd.read_csv(file_answer)
-            df_submit = pd.read_csv(file_submit)
+            df_answer = pd.read_csv(file_answer, header=None, names=['id', 'y'])
+            df_submit = pd.read_csv(file_submit, header=None, names=['id', 'yhat'])
+            metric = Metric(
+                answer=df_answer,
+                prediction=df_submit,
+                metric_type=compete.metric_type,
+                metric_name=compete.metric_name,
+            )
+            metric.check_prediction()
+            _score = metric.calc_score()
             # register metric to score table
-            # redirect to leaderboard
-            pass
+            submit = CompetitionSubmission.query. \
+                filter(CompetitionSubmission.user_id==current_user.id). \
+                filter(CompetitionSubmission.competition_id==compete.id). \
+                filter(CompetitionSubmission.submit_date == submit_date). \
+                first()
+            score = CompetitionScore(
+                user_id=current_user.id,
+                competition_id=compete.id,
+                submission_id=submit.id,
+                score=_score
+            )
+            db.session.add(score)
+            db.session.commit()
+            redirect(url_for("bp_compete.leaderboard", compete_name=compete_name))
     return redirect(url_for("bp_compete.overview", compete_name=compete_name))

@@ -301,7 +301,7 @@ def submission(compete_name):
             metric.check_prediction()
             _score = metric.calc_score()
             # register metric to score table
-            submit = CompetitionSubmission.query. \
+            _submit = CompetitionSubmission.query. \
                 filter(CompetitionSubmission.user_id==current_user.id). \
                 filter(CompetitionSubmission.competition_id==compete.id). \
                 filter(CompetitionSubmission.submit_date == submit_date). \
@@ -309,7 +309,7 @@ def submission(compete_name):
             score = CompetitionScore(
                 user_id=current_user.id,
                 competition_id=compete.id,
-                submission_id=submit.id,
+                submission_id=_submit.id,
                 score=_score
             )
             db.session.add(score)

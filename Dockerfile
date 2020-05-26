@@ -11,4 +11,3 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 
 ADD . /app/
 
-EXPOSE 5000

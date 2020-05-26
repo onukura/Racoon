@@ -15,8 +15,6 @@ jobs:
           command: |
             docker-compose up -d --build
             docker-compose ps
-      - run:
-          command: |
             docker-compose exec racoon python -m coverage run -m unittest discover
             docker-compose exec racoon python manage.py init_app
             docker-compose exec racoon python manage.py create_dummy_data

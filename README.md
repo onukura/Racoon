@@ -10,7 +10,7 @@
 [![Docker automated](https://img.shields.io/docker/cloud/automated/onukura/racoon)](https://hub.docker.com/r/onukura/racoon)
 [![Docker build](https://img.shields.io/docker/cloud/build/onukura/racoon)](https://hub.docker.com/r/onukura/racoon)
 
-Simple and easy data science competition hosting application
+Simple and easy data science competition hosting application inspired by [dataScienceLeaderboardPlatform](https://github.com/thenomemac/dataScienceLeaderboardPlatform).
 
 ## Installation
 

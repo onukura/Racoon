@@ -169,6 +169,7 @@ def overview(compete_name):
 def data(compete_name):
     upload_dir = current_app.config["STORAGE_PATH_DATA"]
     compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
     data_list = storage.connection.list_objects_v2(
         compete_name, recursive=True, start_after=upload_dir
     )
@@ -181,30 +182,35 @@ def data(compete_name):
     ]
     if compete:
         return render_template(
-            "compete/data.html", compete=compete, data_dict=data_dict
+            "compete/data.html", compete=compete, data_dict=data_dict, is_joined=is_joined
         )
 
 
 @bp_compete.route("/<string:compete_name>/data/download/<string:filename>")
 @login_or_role_erquired("member")
 def data_download(compete_name, filename):
-    upload_dir = current_app.config["STORAGE_PATH_DATA"]
-    file = storage.connection.get_object(compete_name, f"{upload_dir}/{filename}")
-    fileobj = io.BytesIO()
-    with zipfile.ZipFile(fileobj, "w") as zip_file:
-        zip_info = zipfile.ZipInfo(filename)
-        zip_info.date_time = time.localtime(time.time())[:6]
-        zip_info.compress_type = zipfile.ZIP_DEFLATED
-        zip_file.writestr(zip_info, file.data)
-    fileobj.seek(0)
-    response = make_response(fileobj.read())
-    response.headers.set("Content-Type", "zip")
-    response.headers.set(
-        "Content-Disposition",
-        "attachment",
-        filename="%s.zip" % os.path.splitext(os.path.basename(filename))[0],
-    )
-    return response
+    compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
+    if is_joined:
+        upload_dir = current_app.config["STORAGE_PATH_DATA"]
+        file = storage.connection.get_object(compete_name, f"{upload_dir}/{filename}")
+        fileobj = io.BytesIO()
+        with zipfile.ZipFile(fileobj, "w") as zip_file:
+            zip_info = zipfile.ZipInfo(filename)
+            zip_info.date_time = time.localtime(time.time())[:6]
+            zip_info.compress_type = zipfile.ZIP_DEFLATED
+            zip_file.writestr(zip_info, file.data)
+        fileobj.seek(0)
+        response = make_response(fileobj.read())
+        response.headers.set("Content-Type", "zip")
+        response.headers.set(
+            "Content-Disposition",
+            "attachment",
+            filename="%s.zip" % os.path.splitext(os.path.basename(filename))[0],
+        )
+        return response
+    else:
+        return redirect(url_for("bp_compete.data", compete_name=compete_name))
 
 
 @bp_compete.route("/<string:compete_name>/discussion")

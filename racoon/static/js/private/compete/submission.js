@@ -1,4 +1,4 @@
 // Markdown to HTML
-$("#description_submission").keyup(function() {
+$("#description").keyup(function() {
     $('#marked-preview').html(DOMPurify.sanitize(marked($(this).val())));
 });

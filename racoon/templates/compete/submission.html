@@ -7,7 +7,10 @@
   <script src="{{ url_for('static', filename='plugins/marked/marked.min.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/highlight/highlight.pack.js') }}"></script>
   <script src="{{ url_for('static', filename='plugins/DOMPurify/purify.js') }}"></script>
+  <script src="{{ url_for('static', filename='plugins/bs-custom-file-input/bs-custom-file-input.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/private/utils/general.js') }}"></script>
   <script src="{{ url_for('static', filename='js/private/utils/md.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/private/compete/submission.js') }}"></script>
 {% endblock %}
 
 {% block content_header %}
@@ -29,46 +32,46 @@
       </div>
       <div class="card-body">
         {% if is_joined %}
-        <form role="form" action="{{ url_for("bp_compete.submission", compete_name=compete.name, _external=True) }}" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <div class="row">
-            <div class="col-sm-4">
-              Step 1: Upload file
-            </div>
-            <div class="col-sm-8">
-              <div class="form-group">
-                <label for="InputFilePred">Prediction file</label>
-                <div class="custom-file">
-                  {{ form.file_prediction }}
-                  <label class="custom-file-label" for="InputFilePred">Choose file</label>
+          <form role="form" action="{{ url_for("bp_compete.submission", compete_name=compete.name, _external=True) }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="row">
+              <div class="col-sm-4">
+                Step 1: Upload file
+              </div>
+              <div class="col-sm-8">
+                <div class="form-group">
+                  <label for="InputFilePred">Prediction file</label>
+                  <div class="custom-file">
+                    {{ form.file_prediction }}
+                    <label class="custom-file-label" for="InputFilePred">Choose file</label>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col-sm-4">
-              Step 2: Describe submission
-            </div>
-            <div class="col-sm-8">
-              <!-- Competition Description for data -->
-              <div class="row">
-                <div class="col-sm-6">
-                  <label>Description(Input)</label>
-                  {{ form.description }}
-                </div>
-                <div class="col-sm-6">
-                  <label>Description(Preview)</label>
-                  <div id="marked-preview" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-4">
+                Step 2: Describe submission
+              </div>
+              <div class="col-sm-8">
+                <!-- Competition Description for data -->
+                <div class="row">
+                  <div class="col-sm-6">
+                    <label>Description(Input)</label>
+                    {{ form.description }}
+                  </div>
+                  <div class="col-sm-6">
+                    <label>Description(Preview)</label>
+                    <div id="marked-preview" style="border: solid; border-color: grey; border-left-color: transparent; border-right-color: transparent; border-width: 0.5px;"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <hr>
-          <div class="row">
-            <button type="submit" class="btn btn-lg btn-success">Submit</button>
-          </div>
-        </form>
+            <hr>
+            <div class="row">
+              <button type="submit" class="btn btn-lg btn-success">Submit</button>
+            </div>
+          </form>
         {% else %}
           You are not joined in this competition. If you want to submit, please join at first.
         {% endif %}

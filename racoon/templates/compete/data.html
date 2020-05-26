@@ -23,60 +23,65 @@
 
   {% include "compete/__title_block.html" %}
 
-  <div class="col-sm-12">
-    <div class="card">
-      <div class="card-header bg-gray-light">
-        <h3 class="card-title">Data Description</h3>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header bg-gray-light">
+          <h3 class="card-title">Data Description</h3>
+        </div>
+        <div class="card-body">
+          <div id="markdown_description_data">{{ compete.description_data }}</div>
+        </div>
+        <!-- /.card -->
       </div>
-      <div class="card-body">
-        <div id="markdown_description_data">{{ compete.description_data }}</div>
+    </div>
+    <div class="col-sm-6">
+      <!-- /.card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title bg-gray-light">Data List</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          {% if is_joined %}
+            {% if data_dict|length > 0 %}
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th style="width: 10px">#</th>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th style="width: 40px">Link</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for data in data_dict %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ data["name"] }}</td>
+                    <td>{{ data["size"] }} KB</td>
+                    <td><a href="{{ url_for("bp_compete.data_download", compete_name=compete.name, filename=data["name"], _external=True) }}"><span class="badge bg-primary">download</span></a></td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><a href="{{ url_for("bp_compete.data_download", compete_name=compete.name, filename="all", _external=True) }}"><span class="badge bg-primary">download all</span></a></td>
+                </tr>
+                </tbody>
+              </table>
+            {% else %}
+              No data provided.
+            {% endif %}
+          {% else %}
+            You need to join this competition to download data.
+          {% endif %}
+        </div>
+        <!-- /.card-body -->
       </div>
       <!-- /.card -->
     </div>
   </div>
-  <div class="col-sm-6">
-    <!-- /.card -->
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title bg-gray-light">Data List</h3>
-      </div>
-      <!-- /.card-header -->
-      <div class="card-body">
-      {% if data_dict|length > 0 %}
-        <table class="table table-bordered">
-          <thead>
-          <tr>
-            <th style="width: 10px">#</th>
-            <th>Name</th>
-            <th>Size</th>
-            <th style="width: 40px">Link</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for data in data_dict %}
-            <tr>
-              <td>{{ loop.index }}</td>
-              <td>{{ data["name"] }}</td>
-              <td>{{ data["size"] }} KB</td>
-              <td><a href="{{ url_for("bp_compete.data_download", compete_name=compete.name, filename=data["name"], _external=True) }}"><span class="badge bg-primary">download</span></a></td>
-            </tr>
-          {% endfor %}
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><a href="{{ url_for("bp_compete.data_download", compete_name=compete.name, filename="all", _external=True) }}"><span class="badge bg-primary">download all</span></a></td>
-          </tr>
-          </tbody>
-        </table>
-      {% else %}
-        No data provided.
-      {% endif %}
-      </div>
-      <!-- /.card-body -->
-    </div>
-    <!-- /.card -->
-  </div>
-  <!-- /.card -->
-  </div>
+
 {% endblock %}

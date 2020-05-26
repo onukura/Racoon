@@ -7,23 +7,19 @@ jobs:
           FLASK_CONFIG: debug
     steps:
       - checkout
-      - run: mkdir test-reports
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - setup_remote_docker:
+          reusable: true
       - run:
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-      - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - 'venv'
+            docker-compose up -d --build
+            docker-compose ps
       - run:
           command: |
-            . venv/bin/activate
-            coverage run -m unittest discover
-            codecov
+            docker-compose exec racoon python -m coverage run -m unittest discover
+            docker-compose exec racoon python manage.py init_app
+            docker-compose exec racoon python manage.py create_dummy_data
 
   deploy:
     machine:

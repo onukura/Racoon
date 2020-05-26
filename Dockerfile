@@ -1,14 +1,14 @@
 FROM python:3.7
 
-RUN mkdir /app
-
-ADD ./requirements.txt /app/requirements.txt
-
-WORKDIR /app
-
+# Requirements have to be pulled and installed here to use cache
+COPY ./requirements.txt /requirements.txt
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r requirements.txt
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r /requirements.txt
 
+COPY ./wait-for-it.sh /wait-for-it.sh
+RUN sed -i 's/\r//' /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+RUN mkdir /app
 ADD . /app/
-
-RUN sed -i 's/\r//' /app/wait-for-it.sh
+WORKDIR /app

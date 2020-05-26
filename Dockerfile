@@ -11,3 +11,4 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 
 ADD . /app/
 
+RUN sed -i 's/\r//' /app/wait-for-it.sh

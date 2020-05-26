@@ -6,6 +6,7 @@ import sys
 import time
 import zipfile
 
+import pandas as pd
 from flask import (
     Blueprint,
     render_template,
@@ -17,10 +18,13 @@ from flask import (
 )
 from flask_login import current_user
 from werkzeug.utils import secure_filename
+from sqlalchemy import desc
 
 from racoon.extensions import db, storage
 from racoon.lib.utils import clean_str
-from racoon.lib.evals import metrics
+from racoon.lib.evals import Metric
+from racoon.lib.db import create_general_query
+from racoon.models.user import User
 from racoon.models.activity import GeneralActivity
 from racoon.models.competition import (
     Competition,
@@ -62,7 +66,7 @@ def create():
     if request.method == "GET":
         return render_template("compete/create.html", form=form)
     else:
-        form.metric.choices = [(form.metric.data, form.metric.data)]
+        form.metric_name.choices = [(form.metric_name.data, form.metric_name.data)]
         if form.validate_on_submit():
             compete_name = clean_str(form.name.data)
             # Add competition record to db
@@ -95,17 +99,34 @@ def create():
             db.session.commit()
             # Create bucket
             storage.connection.make_bucket(compete_name)
-            # Data upload to bucket
+            # Answer data upload to bucket
+            # TODO last row of csv is strangely empty.
             file_answer = form.file_answer.data
-            filename = secure_filename(file_answer.filename)
-            upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+            filename_answer = current_app.config[
+                "FILENAME_ANSWER"
+            ]  # secure_filename(file_answer.filename)
+            upload_dir_answer = current_app.config["STORAGE_PATH_ANSWER"]
             storage.connection.put_object(
                 compete_name,
-                f"{upload_dir}/{filename}",
+                f"{upload_dir_answer}/{filename_answer}",
                 file_answer,
                 length=sys.getsizeof(file_answer),
                 content_type="application/csv",
             )
+            # Etc data upload to bucket
+            if form.file_data.data is not None:
+                # etc. data is multiple file input
+                for _file_data in form.file_data.data:
+                    if _file_data.content_length > 0:
+                        _filename_data = secure_filename(_file_data.filename)
+                        upload_dir_data = current_app.config["STORAGE_PATH_DATA"]
+                        storage.connection.put_object(
+                            compete_name,
+                            f"{upload_dir_data}/{_filename_data}",
+                            _file_data,
+                            length=sys.getsizeof(_file_data),
+                            content_type="application/csv",
+                        )
             # Add this event to CompetitionActivity
             compete_activity = CompetitionActivity(
                 user_id=current_user.id,
@@ -146,7 +167,7 @@ def overview(compete_name):
 @bp_compete.route("/<string:compete_name>/data")
 @login_or_role_erquired("member")
 def data(compete_name):
-    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+    upload_dir = current_app.config["STORAGE_PATH_DATA"]
     compete = Competition.query.filter(Competition.name == compete_name).first()
     data_list = storage.connection.list_objects_v2(
         compete_name, recursive=True, start_after=upload_dir
@@ -167,7 +188,7 @@ def data(compete_name):
 @bp_compete.route("/<string:compete_name>/data/download/<string:filename>")
 @login_or_role_erquired("member")
 def data_download(compete_name, filename):
-    upload_dir = current_app.config["STORAGE_UPLOAD_PATH"]
+    upload_dir = current_app.config["STORAGE_PATH_DATA"]
     file = storage.connection.get_object(compete_name, f"{upload_dir}/{filename}")
     fileobj = io.BytesIO()
     with zipfile.ZipFile(fileobj, "w") as zip_file:
@@ -201,7 +222,22 @@ def notebook(compete_name):
 @bp_compete.route("/<string:compete_name>/leaderboard")
 @login_or_role_erquired("member")
 def leaderboard(compete_name):
-    return redirect(request.url)
+    compete = Competition.query.filter(Competition.name == compete_name).first()
+    is_joined = compete.is_user_joined(current_user.id)
+    scores_query_obj = db.session \
+        .query(CompetitionScore, CompetitionSubmission, User) \
+        .join(CompetitionSubmission, CompetitionScore.submission_id == CompetitionSubmission.id) \
+        .join(User, CompetitionScore.user_id == User.id) \
+        .filter(CompetitionScore.competition_id == compete.id) \
+        .order_by(CompetitionScore.score)
+    _df_scores = pd.read_sql(create_general_query(scores_query_obj), db.engine)
+    user_count = _df_scores[["username", "score"]].groupby("username").count().rename(columns={'score':'count'})
+    max_scores = _df_scores[["username", "score"]].groupby("username").max()
+    last_dates = _df_scores[["username", "submit_date"]].groupby("username").max().rename(columns={'submit_date':'last'})
+    df_scores = user_count.merge(max_scores, on="username").merge(last_dates, on="username")
+    df_scores.reset_index(inplace=True)
+    scores_list = df_scores.to_dict(orient="row")
+    return render_template("compete/leaderboard.html", compete=compete, is_joined=is_joined, scores_list=scores_list)
 
 
 @bp_compete.route("/<string:compete_name>/join")
@@ -238,30 +274,62 @@ def submission(compete_name):
     elif request.method == "POST":
         if form.validate_on_submit():
             # save uploaded file to storage
-            file_answer = form.file_prediction.data
-            filename = secure_filename(file_answer.filename)
-            upload_dir = current_app.config["STORAGE_SUBMISSION_PATH"]
+            file_submit = form.file_prediction.data
+            filename = secure_filename(file_submit.filename)
+            upload_dir = current_app.config["STORAGE_PATH_SUBMISSION"]
             storage.connection.put_object(
                 compete_name,
                 f"{upload_dir}/{current_user.id}/{filename}",
-                file_answer,
-                length=sys.getsizeof(file_answer),
+                file_submit,
+                length=sys.getsizeof(file_submit),
                 content_type="application/csv",
             )
+            del file_submit
             # register submission to submission table
+            submit_date = datetime.datetime.now()
             submit = CompetitionSubmission(
                 user_id=current_user.id,
                 competition_id=compete.id,
-                submit_date=datetime.datetime.now(),
+                submit_date=submit_date,
                 file_name=filename,
-                description=form.description,
+                description=form.description.data,
             )
             db.session.add(submit)
-            # load metric
-            metric_func = metrics.get(compete.metric_type).get(compete.metric_name)
-            # load answer file
+            db.session.commit()
+            # load files
+            answer_dir = current_app.config["STORAGE_PATH_ANSWER"]
+            filename_answer = current_app.config["FILENAME_ANSWER"]
+            file_answer = storage.connection.get_object(
+                bucket_name=compete_name, object_name=f"{answer_dir}/{filename_answer}"
+            )
+            file_submit = storage.connection.get_object(
+                bucket_name=compete_name,
+                object_name=f"{upload_dir}/{current_user.id}/{filename}",
+            )
             # calculate metric
+            df_answer = pd.read_csv(file_answer, header=None, names=['id', 'y'])
+            df_submit = pd.read_csv(file_submit, header=None, names=['id', 'yhat'])
+            metric = Metric(
+                answer=df_answer,
+                prediction=df_submit,
+                metric_type=compete.metric_type,
+                metric_name=compete.metric_name,
+            )
+            metric.check_prediction()
+            _score = metric.calc_score()
             # register metric to score table
-            # redirect to leaderboard
-            pass
+            _submit = CompetitionSubmission.query. \
+                filter(CompetitionSubmission.user_id==current_user.id). \
+                filter(CompetitionSubmission.competition_id==compete.id). \
+                filter(CompetitionSubmission.submit_date == submit_date). \
+                first()
+            score = CompetitionScore(
+                user_id=current_user.id,
+                competition_id=compete.id,
+                submission_id=_submit.id,
+                score=_score
+            )
+            db.session.add(score)
+            db.session.commit()
+            return redirect(url_for("bp_compete.leaderboard", compete_name=compete_name))
     return redirect(url_for("bp_compete.overview", compete_name=compete_name))

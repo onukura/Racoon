@@ -46,6 +46,7 @@ services:
       - 5000:5000
     depends_on:
       - postgresql
+      - pgadmin4
       - minio
     environment:
       FLASK_CONFIG: deploy

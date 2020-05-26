@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from wtforms import MultipleFileField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, SelectField, RadioField, DateField
@@ -34,14 +35,14 @@ class CreateCompetitionForm(FlaskForm):
         widget=TextArea(),
     )
     metric_type = RadioField(
-        "compete_eval_type",
+        "compete_metric_type",
         validators=[DataRequired()],
         choices=[("regression", "Regression"), ("classification", "Classification")],
         default="regression",
         render_kw={"class": "form-check"},
     )
     metric_name = SelectField(
-        "compete_metric", render_kw={"class": "form-control", "id": "metric"},
+        "compete_metric_name", render_kw={"class": "form-control", "id": "metric_name"},
     )
     file_answer = FileField(
         validators=[
@@ -50,7 +51,9 @@ class CreateCompetitionForm(FlaskForm):
         ],
         render_kw={"class": "custom-file-input"},
     )
-    file_data = FileField(render_kw={"class": "custom-file-input"})
+    file_data = MultipleFileField(
+        render_kw={"class": "custom-file-input", "multiple": True}
+    )
     expired_date = DateField(
         "expired_date",
         format="%Y-%m-%d",

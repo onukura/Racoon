@@ -12,4 +12,5 @@ RUN chmod +x /wait-for-it.sh
 
 RUN mkdir /app
 ADD . /app/
+RUN chmod +x /app/boot.sh
 WORKDIR /app

@@ -1,7 +1,7 @@
 FROM python:3.7
 
 # Requirements have to be pulled and installed here to use cache
-COPY ./requirements.txt /requirements.txt
+COPY ./requirements/deploy.txt /requirements.txt
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r /requirements.txt
 

@@ -70,11 +70,14 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     # Registering the view and the api blueprints here
     with app.app_context():
-        from racoon.view import views
+        from racoon.view import views, errors
 
         for k, v in views.items():
             app.register_blueprint(v)
             app.logger.info("blueprint registration: {}".format(k))
+        for k, v in errors.items():
+            app.register_error_handler(k, v)
+        app.logger.info("error handler registration: {}".format(k))
     app.logger.info("register_blueprints done")
     return None
 

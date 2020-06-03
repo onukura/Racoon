@@ -182,7 +182,10 @@ def data(compete_name):
     ]
     if compete:
         return render_template(
-            "compete/data.html", compete=compete, data_dict=data_dict, is_joined=is_joined
+            "compete/data.html",
+            compete=compete,
+            data_dict=data_dict,
+            is_joined=is_joined,
         )
 
 
@@ -230,20 +233,41 @@ def notebook(compete_name):
 def leaderboard(compete_name):
     compete = Competition.query.filter(Competition.name == compete_name).first()
     is_joined = compete.is_user_joined(current_user.id)
-    scores_query_obj = db.session \
-        .query(CompetitionScore, CompetitionSubmission, User) \
-        .join(CompetitionSubmission, CompetitionScore.submission_id == CompetitionSubmission.id) \
-        .join(User, CompetitionScore.user_id == User.id) \
-        .filter(CompetitionScore.competition_id == compete.id) \
+    scores_query_obj = (
+        db.session.query(CompetitionScore, CompetitionSubmission, User)
+        .join(
+            CompetitionSubmission,
+            CompetitionScore.submission_id == CompetitionSubmission.id,
+        )
+        .join(User, CompetitionScore.user_id == User.id)
+        .filter(CompetitionScore.competition_id == compete.id)
         .order_by(CompetitionScore.score)
+    )
     _df_scores = pd.read_sql(create_general_query(scores_query_obj), db.engine)
-    user_count = _df_scores[["username", "score"]].groupby("username").count().rename(columns={'score':'count'})
+    user_count = (
+        _df_scores[["username", "score"]]
+        .groupby("username")
+        .count()
+        .rename(columns={"score": "count"})
+    )
     max_scores = _df_scores[["username", "score"]].groupby("username").max()
-    last_dates = _df_scores[["username", "submit_date"]].groupby("username").max().rename(columns={'submit_date':'last'})
-    df_scores = user_count.merge(max_scores, on="username").merge(last_dates, on="username")
+    last_dates = (
+        _df_scores[["username", "submit_date"]]
+        .groupby("username")
+        .max()
+        .rename(columns={"submit_date": "last"})
+    )
+    df_scores = user_count.merge(max_scores, on="username").merge(
+        last_dates, on="username"
+    )
     df_scores.reset_index(inplace=True)
     scores_list = df_scores.to_dict(orient="row")
-    return render_template("compete/leaderboard.html", compete=compete, is_joined=is_joined, scores_list=scores_list)
+    return render_template(
+        "compete/leaderboard.html",
+        compete=compete,
+        is_joined=is_joined,
+        scores_list=scores_list,
+    )
 
 
 @bp_compete.route("/<string:compete_name>/join")
@@ -313,8 +337,8 @@ def submission(compete_name):
                 object_name=f"{upload_dir}/{current_user.id}/{filename}",
             )
             # calculate metric
-            df_answer = pd.read_csv(file_answer, header=None, names=['id', 'y'])
-            df_submit = pd.read_csv(file_submit, header=None, names=['id', 'yhat'])
+            df_answer = pd.read_csv(file_answer, header=None, names=["id", "y"])
+            df_submit = pd.read_csv(file_submit, header=None, names=["id", "yhat"])
             metric = Metric(
                 answer=df_answer,
                 prediction=df_submit,
@@ -324,18 +348,23 @@ def submission(compete_name):
             metric.check_prediction()
             _score = metric.calc_score()
             # register metric to score table
-            _submit = CompetitionSubmission.query. \
-                filter(CompetitionSubmission.user_id==current_user.id). \
-                filter(CompetitionSubmission.competition_id==compete.id). \
-                filter(CompetitionSubmission.submit_date == submit_date). \
-                first()
+            _submit = (
+                CompetitionSubmission.query.filter(
+                    CompetitionSubmission.user_id == current_user.id
+                )
+                .filter(CompetitionSubmission.competition_id == compete.id)
+                .filter(CompetitionSubmission.submit_date == submit_date)
+                .first()
+            )
             score = CompetitionScore(
                 user_id=current_user.id,
                 competition_id=compete.id,
                 submission_id=_submit.id,
-                score=_score
+                score=_score,
             )
             db.session.add(score)
             db.session.commit()
-            return redirect(url_for("bp_compete.leaderboard", compete_name=compete_name))
+            return redirect(
+                url_for("bp_compete.leaderboard", compete_name=compete_name)
+            )
     return redirect(url_for("bp_compete.overview", compete_name=compete_name))

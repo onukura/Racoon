@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-sm-12">
+    <!-- Widget: user widget style 1 -->
+    <div class="card card-widget widget-user">
+      <!-- Add the bg color to the header using any of the bg-* classes -->
+      <div class="widget-user-header">
+        <div style="vertical-align: middle"><h1 style="text-align: left;">{{ current_user.username }}</h1></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+          <ul class="nav justify-content-start">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_user.home', username=current_user.username, _external=True) }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_user.competes', username=current_user.username, _external=True) }}">Competitions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_user.datasets', username=current_user.username, _external=True) }}">Datasets</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_user.notebooks', username=current_user.username, _external=True) }}">Notebooks</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('bp_user.discussion', username=current_user.username, _external=True) }}">Discussion</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-sm-4">
+          <ul class="nav justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('bp_user.edit', username=current_user.username, _external=True) }}">Edit Profile</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.widget-user -->
+  </div>
+</div>

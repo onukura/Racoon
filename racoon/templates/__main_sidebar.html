@@ -17,7 +17,7 @@
           <img src="{{ current_user.avatar(256) }}">
         </div>
         <div class="info">
-          <a href="#" class="d-block">{{ current_user.username }}</a>
+          <a href="{{ url_for("bp_user.home", username=current_user.username, _external=True) }}" class="d-block">{{ current_user.username }}</a>
         </div>
       </div>
     {% endif %}

@@ -1,0 +1,10 @@
+[run]
+source = .
+omit = */venv/*,setup.py,*/docs/*,*/docker/*
+
+[report]
+show_missing = False
+skip_covered = True
+
+[xml]
+output = coverage.xml

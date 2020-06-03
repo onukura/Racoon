@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block custom_header %}
+{% endblock %}
+
+{% block custom_footer %}
+{% endblock %}
+
+{% block content_header %}
+  {% with content_header_name = "" %}
+    {% include "__content_header.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block custom_control_sidebar %}
+{% endblock %}
+
+{% block main_content %}
+
+  {% include "user/__header_block.html" %}
+
+  WIP...
+
+{% endblock %}

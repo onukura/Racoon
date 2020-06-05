@@ -1,7 +1,8 @@
 ![logo](docs/assets/img/logo.png)
 
-# Racoon: A simple data science leaderboard
+# Racoon: A simple data science leaderboard "Alpha version"
 
+[![Python](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue)](https://www.python.org)
 [![GitHub license](https://img.shields.io/github/license/onukura/Racoon)](https://github.com/onukura/Racoon)
 [![CircleCI Build Status](https://circleci.com/gh/onukura/Racoon.svg?style=shield)](https://circleci.com/gh/onukura/Racoon)
 [![TravisCI Build Status](https://travis-ci.org/onukura/Racoon.svg?branch=master)](https://travis-ci.org/onukura/Racoon)

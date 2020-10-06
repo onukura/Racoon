@@ -9,12 +9,9 @@ target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
 exclude = '''
 /(
-    \.eggs
   | \.git
   | \.idea
-  | \.tox
   | \venv
-  | nssm
   | logs
   | experiments
   | __pycache__

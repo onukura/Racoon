@@ -11,4 +11,4 @@ minio==5.0.10
 pandas==1.0.4
 psycopg2==2.8.5
 scikit-learn==0.23.1
-scipy==1.4.1
+scipy==1.10.0
